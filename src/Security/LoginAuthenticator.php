@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Security;
 
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -24,7 +26,7 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'app_login';
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
+    public function __construct(private UrlGeneratorInterface $urlGenerator, private EntityManagerInterface $em)
     {
     }
 
@@ -46,13 +48,13 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
-            return new RedirectResponse($targetPath);
-        }
+        /** @var User $user */
+        $user = $token->getUser();
+        $user->setLastLoggedInAt(new \DateTimeImmutable());
+        $this->em->persist($user);
+        $this->em->flush();
 
-        // For example:
-        // return new RedirectResponse($this->urlGenerator->generate('some_route'));
-        throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+        return new JsonResponse(['message' => 'Logged in successfully']);
     }
 
     protected function getLoginUrl(Request $request): string

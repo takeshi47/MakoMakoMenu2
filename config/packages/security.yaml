@@ -24,6 +24,10 @@ security:
                 path: app_logout
                 # where to redirect after logout
                 # target: app_any_route
+            json_login:
+                check_path: /api/login
+                username_path: email
+                password_path: password
 
             remember_me:
                 secret: '%kernel.secret%'
@@ -40,7 +44,9 @@ security:
     # Note: Only the *first* matching rule is applied
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/api/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/, roles: ROLE_USER }
 
 when@test:
     security:
