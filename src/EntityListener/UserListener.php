@@ -2,21 +2,18 @@
 
 declare(strict_types=1);
 
+namespace App\EntityListener;
+
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[AsEntityListener(event: Events::preFlush, entity: User::class)]
 class UserListener
 {
     public function __construct(private UserPasswordHasherInterface $encoder)
-    {
-    }
-
-    public function postLoad(User $user, LifecycleEventArgs $event)
     {
     }
 
