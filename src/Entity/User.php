@@ -33,6 +33,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    private ?string $plainPassword = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $displayName = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $lastLoggedInAt = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -102,5 +110,41 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
 
         return $data;
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(string $plainPassword): static
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
+    public function getDisplayName(): ?string
+    {
+        return $this->displayName;
+    }
+
+    public function setDisplayName(?string $displayName): static
+    {
+        $this->displayName = $displayName;
+
+        return $this;
+    }
+
+    public function getLastLoggedInAt(): ?\DateTimeImmutable
+    {
+        return $this->lastLoggedInAt;
+    }
+
+    public function setLastLoggedInAt(?\DateTimeImmutable $lastLoggedInAt): static
+    {
+        $this->lastLoggedInAt = $lastLoggedInAt;
+
+        return $this;
     }
 }
