@@ -60,7 +60,7 @@ class UserCreateCommand extends Command
             $inputtedRoles[] = $helper->ask($input, $output, $question);
             $output->writeln('You have just selected: '.implode(', ', $inputtedRoles));
         } else {
-            $inputtedRoles = $input->getOption('roles');
+            $inputtedRoles[] = $input->getOption('roles');
         }
 
         $displayName = $input->getOption('displayName');
