@@ -126,7 +126,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getDisplayName(): ?string
     {
-        return $this->displayName;
+        return $this->displayName ?? $this->email;
     }
 
     public function setDisplayName(?string $displayName): static
