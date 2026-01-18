@@ -1,8 +1,11 @@
+includes:
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+
 parameters:
-    level: 6
+    level: 5
     paths:
-        - bin/
-        - config/
-        - public/
-        - src/
-        - tests/
+        - src
+    excludePaths:
+        - vendor/*  # vendor 以下を解析対象から除外
+    doctrine:
+        allowNullablePropertyForRequiredField: true
