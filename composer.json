@@ -62,6 +62,12 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "fix": "php-cs-fixer fix --config=.php-cs-fixer.dist.php",
+        "stan": "phpstan analyse --memory-limit=1G",
+        "check": [
+            "@fix",
+            "@stan"
         ]
     },
     "conflict": {
