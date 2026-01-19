@@ -40,6 +40,7 @@
             "production": {
               "outputHashing": "all",
               "deployUrl": "/prod/",
+              "baseHref": "/prod/",
               "outputPath": {
                 "base": "../public/prod",
                 "browser": ""
@@ -48,6 +49,7 @@
             "development": {
               "sourceMap": true,
               "deployUrl": "/dev/",
+              "baseHref": "/dev/",
               "outputPath": {
                 "base": "../public/dev",
                 "browser": ""
