@@ -9,3 +9,6 @@
 
 controllers:
     resource: routing.controllers
+
+api_routes:
+    resource: "routes/api.yaml"
