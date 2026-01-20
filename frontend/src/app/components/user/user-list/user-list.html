@@ -1,0 +1,28 @@
+<h2>User List</h2>
+
+@if (users$ | async; as users) {
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Display Name</th>
+        <th>Email</th>
+        <th>Roles</th>
+        <th>Last Logged In</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (user of users; track $index) {
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>{{ user.displayName }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.roles.join(', ') }}</td>
+          <td>
+            {{ user.lastLoggedInAt | date: 'medium' }}
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
