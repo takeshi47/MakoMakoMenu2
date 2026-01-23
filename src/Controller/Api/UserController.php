@@ -9,9 +9,11 @@ use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 #[Route(path: '/user', name: 'user_')]
 final class UserController extends AbstractController
@@ -22,25 +24,36 @@ final class UserController extends AbstractController
         return $this->json($userRepository->findAll(), context: ['groups' => 'user:read']);
     }
 
-    // #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
-    // public function new(Request $request, EntityManagerInterface $entityManager): Response
-    // {
-    //     $user = new User();
-    //     $form = $this->createForm(UserType::class, $user);
-    //     $form->handleRequest($request);
+    #[Route('/new', name: 'new', methods: ['POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $user = new User();
+        $form = $this->createForm(UserType::class, $user, [
+            'validation_groups' => ['Default', 'registration'],
+        ]);
 
-    //     if ($form->isSubmitted() && $form->isValid()) {
-    //         $entityManager->persist($user);
-    //         $entityManager->flush();
+        $data = json_decode($request->getContent(), true);
+        $form->submit($data);
 
-    //         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
-    //     }
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($user);
+            $entityManager->flush();
 
-    //     return $this->render('user/new.html.twig', [
-    //         'user' => $user,
-    //         'form' => $form,
-    //     ]);
-    // }
+            return $this->json(null, Response::HTTP_CREATED);
+        }
+
+        $errors = $this->getErrorsFromForm($form);
+
+        return $this->json($errors, Response::HTTP_BAD_REQUEST);
+    }
+
+    #[Route(path: '/csrf-token', name: 'csrf_token', methods: ['GET'])]
+    public function getCsrtToken(CsrfTokenManagerInterface $csrfTokenManager): Response
+    {
+        $token = $csrfTokenManager->getToken('user')->getValue();
+
+        return $this->json(['token' => $token]);
+    }
 
     // #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
     // public function show(User $user): Response
@@ -77,5 +90,48 @@ final class UserController extends AbstractController
     //     }
 
     //     return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+    // }
+
+    private function getErrorsFromForm(FormInterface $form): array
+    {
+        $errors = [];
+
+        // 1. 現在のフォーム/フィールド自身に紐づくグローバルなエラーを取得
+        foreach ($form->getErrors() as $error) {
+            $errors[] = $error->getMessage(); // エラーメッセージを配列に追加
+        }
+
+        // 2. 各子フィールドのエラーを再帰的に取得
+        foreach ($form->all() as $childForm) {
+            // 子フォームに対して自分自身（getErrorsFromForm）を再帰的に呼び出す
+            if ($childErrors = $this->getErrorsFromForm($childForm)) {
+                // 子フォームからエラーが返された場合、その子フォームの名前をキーとしてエラー配列に格納
+                $errors[$childForm->getName()] = $childErrors;
+            }
+        }
+
+        return $errors; // 整形されたエラー配列を返す
+    }
+
+    // private function getErrorsFromForm2(FormInterface $form): array
+    // {
+    //     $errors = [];
+
+    //     foreach ($form->getErrors(true, true) as $formError) {
+    //         $formErrors[] = $formError;
+
+    //         $propertyPath = (string) $formError->getOrigin()?->getName();
+    //         $parentName = $formError->getOrigin()->getParent()->getName();
+
+    //         if (!$propertyPath) {
+    //             $errors['_global'][] = $formError->getMessage();
+    //         } elseif ($propertyPath === $parentName) {
+    //             $errors[$propertyPath][] = $formError->getMessage();
+    //         } else {
+    //             $errors[$parentName][$propertyPath][] = $formError->getMessage();
+    //         }
+    //     }
+
+    //     return $errors;
     // }
 }

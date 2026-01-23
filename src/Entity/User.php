@@ -7,12 +7,15 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use TimestampableEntity;
@@ -25,13 +28,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180)]
     #[Groups(['user:read'])]
+    #[Assert\NotBlank()]
+    #[Assert\Email()]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Assert\NotBlank()]
     private array $roles = [];
 
     /**
@@ -40,10 +45,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    #[Assert\NotBlank(groups: ['registration'])]
+    #[Assert\Length(min: 8, groups: ['registration'])]
     private ?string $plainPassword = null;
 
     #[ORM\Column(length: 20, nullable: true)]
     #[Groups(['user:read'])]
+    #[Assert\Length(max: 20)]
     private ?string $displayName = null;
 
     #[ORM\Column(nullable: true)]
@@ -93,6 +101,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = $roles;
 
         return $this;
+    }
+
+    #[Groups(['user:read'])]
+    public function getRole(): ?string
+    {
+        if (empty($this->roles)) {
+            return null;
+        }
+
+        return $this->roles[0];
+    }
+
+    public function setRole(?string $role): void
+    {
+        if ($role === null) {
+            return;
+        }
+
+        $this->roles = [$role];
     }
 
     /**

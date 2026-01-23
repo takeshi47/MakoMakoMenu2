@@ -6,18 +6,27 @@ namespace App\EntityListener;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
-use Doctrine\ORM\Event\PreFlushEventArgs;
+use Doctrine\ORM\Event\PrePersistEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-#[AsEntityListener(event: Events::preFlush, entity: User::class)]
+#[AsEntityListener(event: Events::prePersist, entity: User::class)]
+#[AsEntityListener(event: Events::preUpdate, entity: User::class)]
 class UserListener
 {
     public function __construct(private UserPasswordHasherInterface $encoder)
     {
     }
 
-    public function preFlush(User $user, PreFlushEventArgs $event)
+    // prePersistイベント用のメソッド
+    public function prePersist(User $user, PrePersistEventArgs $event): void
+    {
+        $this->hashPassword($user);
+    }
+
+    // preUpdateイベント用のメソッド
+    public function preUpdate(User $user, PreUpdateEventArgs $event): void
     {
         $this->hashPassword($user);
     }
