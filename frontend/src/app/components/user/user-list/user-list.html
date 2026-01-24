@@ -1,5 +1,7 @@
 <h2>User List</h2>
 
+<p><a routerLink="/user/create">New User</a></p>
+
 @if (users$ | async; as users) {
   <table>
     <thead>
@@ -7,7 +9,7 @@
         <th>ID</th>
         <th>Display Name</th>
         <th>Email</th>
-        <th>Roles</th>
+        <th>Role</th>
         <th>Last Logged In</th>
       </tr>
     </thead>
@@ -17,7 +19,7 @@
           <td>{{ user.id }}</td>
           <td>{{ user.displayName }}</td>
           <td>{{ user.email }}</td>
-          <td>{{ user.roles.join(', ') }}</td>
+          <td>{{ user.role }}</td>
           <td>
             {{ user.lastLoggedInAt | date: 'medium' }}
           </td>

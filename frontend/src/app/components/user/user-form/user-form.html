@@ -1,0 +1,99 @@
+<p>user-form works!</p>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <!-- email form -->
+  <div>
+    <label for="email">Email</label><input formControlName="email" type="text" />
+
+    @if (form.get('email')?.invalid && form.get('email')?.touched) {
+      <div>
+        @if (form.get('email')?.hasError('required')) {
+          <small>Email is required</small>
+        }
+
+        @if (form.get('email')?.hasError('email')) {
+          <small>Please enter a valid email format.</small>
+        }
+      </div>
+    }
+
+    @for (error of errorMessages?.['email'] | keyvalue; track $index) {
+      <div>{{ error.value }}</div>
+    }
+  </div>
+
+  <!-- displayName form -->
+  <div>
+    <label for="displayName">DisplayName</label>
+    <input formControlName="displayName" type="text" />
+
+    @if (form.get('displayName')?.invalid && form.get('displayName')?.touched) {
+      <div>
+        @if (form.get('displayName')?.hasError('required')) {
+          <small>DisplayName is required</small>
+        }
+      </div>
+    }
+    @if (errorMessages && errorMessages['displayName']) {
+      <div>
+        @for (error of errorMessages['displayName'] | keyvalue; track $index) {
+          <div>{{ error.value }}</div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- password form -->
+  <div formGroupName="plainPassword">
+    <div>
+      <label for="password_first">Password</label>
+      <input id="password_first" type="password" formControlName="first" />
+      <!-- エラー表示 (first) -->
+    </div>
+    @if (errorMessages?.['plainPassword']?.['first']) {
+      <div>
+        @for (msg of errorMessages?.['plainPassword']?.['first'] | keyvalue; track $index) {
+          <div>{{ msg.value }}</div>
+        }
+      </div>
+    }
+    <div>
+      <label for="password_second">Confirm Password</label>
+      <input id="password_second" type="password" formControlName="second" />
+      <!-- エラー表示 (second) -->
+    </div>
+    @if (form.get('plainPassword')?.hasError('passwordsMismatch')) {
+      <div class="error">
+        <small>Passwords do not match.</small>
+      </div>
+    }
+  </div>
+
+  <!-- role form -->
+  <div>
+    <label for="roles">Role</label>
+    <select id="role" formControlName="role" placeholder=" ">
+      <option [value]="null">-</option>
+      @for (role of allRoles; track $index) {
+        <option [value]="role">{{ role }}</option>
+      }
+    </select>
+    @if (form.get('role')?.invalid && form.get('role')?.touched) {
+      <div class="error">
+        <small>At least one role must be selected.</small>
+      </div>
+    }
+    @if (errorMessages && errorMessages['role']) {
+      <div class="error-message">
+        @for (error of errorMessages['role'] | keyvalue; track $index) {
+          <div>{{ error }}</div>
+        }
+      </div>
+    }
+  </div>
+
+  <button type="submit" [disabled]="form.invalid">create</button>
+</form>
+
+{{ form.status }}
+<hr />
