@@ -9,4 +9,6 @@ export const routes: Routes = [
   { path: 'home', component: Home },
   { path: 'user/list', component: UserList },
   { path: 'user/create', component: UserForm },
+  { path: 'user/edit/:id', component: UserForm },
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
 ];

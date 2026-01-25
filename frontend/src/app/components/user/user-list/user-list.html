@@ -1,6 +1,8 @@
 <h2>User List</h2>
 
-<p><a routerLink="/user/create">New User</a></p>
+<p>
+  <a routerLink="/user/create">New User</a>
+</p>
 
 @if (users$ | async; as users) {
   <table>
@@ -11,6 +13,7 @@
         <th>Email</th>
         <th>Role</th>
         <th>Last Logged In</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -22,6 +25,9 @@
           <td>{{ user.role }}</td>
           <td>
             {{ user.lastLoggedInAt | date: 'medium' }}
+          </td>
+          <td>
+            <a [routerLink]="['/user/edit', user.id]">edit</a>
           </td>
         </tr>
       }

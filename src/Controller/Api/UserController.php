@@ -24,12 +24,40 @@ final class UserController extends AbstractController
         return $this->json($userRepository->findAll(), context: ['groups' => 'user:read']);
     }
 
+    #[Route(path: '/{id}', name: 'fetch', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function fetchUser(User $user): Response
+    {
+        return $this->json($user, context: ['groups' => 'user:read']);
+    }
+
     #[Route('/new', name: 'new', methods: ['POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user, [
             'validation_groups' => ['Default', 'registration'],
+        ]);
+
+        $data = json_decode($request->getContent(), true);
+        $form->submit($data);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->json(null, Response::HTTP_CREATED);
+        }
+
+        $errors = $this->getErrorsFromForm($form);
+
+        return $this->json($errors, Response::HTTP_BAD_REQUEST);
+    }
+
+    #[Route(path: '/{id}', name: 'edit', methods: ['POST'])]
+    public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(UserType::class, $user, [
+            'validation_groups' => ['Default', 'edit'],
         ]);
 
         $data = json_decode($request->getContent(), true);

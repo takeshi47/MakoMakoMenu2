@@ -15,8 +15,19 @@ export class UserService {
     return this.http.get<User[]>(this.baseUrl);
   }
 
+  getUser(userId: number): Observable<User> {
+    return this.http.get<User>(`${this.baseUrl}/${userId}`);
+  }
+
   create(data: Partial<User> & { _token: string }): Observable<Record<string, string[]>> {
     return this.http.post<Record<string, string[]>>(`${this.baseUrl}/new`, data);
+  }
+
+  update(
+    userId: number,
+    data: Partial<User> & { _token: string },
+  ): Observable<Record<string, string[]>> {
+    return this.http.post<Record<string, string[]>>(`${this.baseUrl}/${userId}`, data);
   }
 
   fetchCsrfToken(): Observable<{ token: string }> {

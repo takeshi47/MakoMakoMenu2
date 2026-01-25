@@ -1,4 +1,4 @@
-<p>user-form works!</p>
+<h2>{{ isEditMode ? 'edit' :' create'}}</h2>
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <!-- email form -->
@@ -92,8 +92,5 @@
     }
   </div>
 
-  <button type="submit" [disabled]="form.invalid">create</button>
+  <button type="submit" [disabled]="form.invalid">{{ isEditMode ? 'edit' :' create'}}</button>
 </form>
-
-{{ form.status }}
-<hr />
