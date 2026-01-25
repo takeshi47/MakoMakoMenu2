@@ -21,7 +21,11 @@
         <tr>
           <td>{{ user.id }}</td>
           <td>{{ user.displayName }}</td>
-          <td>{{ user.email }}</td>
+          <td>
+            <a [routerLink]="['/user', user.id]">
+              {{ user.email }}
+            </a>
+          </td>
           <td>{{ user.role }}</td>
           <td>
             {{ user.lastLoggedInAt | date: 'medium' }}

@@ -1,4 +1,4 @@
-<h2>{{ isEditMode ? 'edit' :' create'}}</h2>
+<h2>{{ isEditMode ? 'edit' : ' create' }}</h2>
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <!-- email form -->
@@ -92,5 +92,5 @@
     }
   </div>
 
-  <button type="submit" [disabled]="form.invalid">{{ isEditMode ? 'edit' :' create'}}</button>
+  <button type="submit" [disabled]="form.invalid">{{ isEditMode ? 'edit' : ' create' }}</button>
 </form>
