@@ -8,7 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of, switchMap } from 'rxjs';
 
 function passwordMatcher(control: AbstractControl): ValidationErrors | null {
@@ -25,6 +25,7 @@ function passwordMatcher(control: AbstractControl): ValidationErrors | null {
 export interface BackendFormErrors {
   [key: string]: BackendFormErrors;
 }
+
 @Component({
   selector: 'app-user-form',
   imports: [ReactiveFormsModule, CommonModule],
@@ -36,6 +37,7 @@ export class UserForm implements OnInit {
   private userService = inject(UserService);
   private fb = inject(FormBuilder);
   private activatedRouter = inject(ActivatedRoute);
+  private router = inject(Router);
 
   private csrfToken = '';
   private userId: number | null = null;
@@ -44,7 +46,7 @@ export class UserForm implements OnInit {
   protected allRoles = ['ROLE_USER', 'ROLE_ADMIN'];
 
   form = this.fb.group({
-    email: [''],
+    email: ['', Validators.required],
     plainPassword: this.fb.group(
       {
         first: [null, [Validators.required]],
@@ -53,7 +55,7 @@ export class UserForm implements OnInit {
       { validators: passwordMatcher },
     ),
     displayName: [''],
-    role: [''],
+    role: ['ROLE_USER', Validators.required],
   });
 
   ngOnInit(): void {
@@ -109,7 +111,9 @@ export class UserForm implements OnInit {
     };
 
     this.userService.create(payload).subscribe({
-      next: (res) => console.log(res),
+      next: () => {
+        this.router.navigate(['user/list']);
+      },
       error: (error) => {
         console.log(error.error);
         this.errorMessages = error.error;
@@ -129,7 +133,9 @@ export class UserForm implements OnInit {
     };
 
     this.userService.update(this.userId, payload).subscribe({
-      next: (res) => console.log(res),
+      next: () => {
+        this.router.navigate(['user/list']);
+      },
       error: (error) => {
         console.log(error.error);
         this.errorMessages = error.error;
@@ -137,6 +143,7 @@ export class UserForm implements OnInit {
       },
     });
   }
+
   protected get isEditMode(): boolean {
     return this.userId !== null;
   }

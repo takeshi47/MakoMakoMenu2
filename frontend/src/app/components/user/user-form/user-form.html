@@ -3,7 +3,8 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <!-- email form -->
   <div>
-    <label for="email">Email</label><input formControlName="email" type="text" />
+    <label for="email">Email</label>
+    <input id="email" formControlName="email" type="text" />
 
     @if (form.get('email')?.invalid && form.get('email')?.touched) {
       <div>
@@ -25,7 +26,7 @@
   <!-- displayName form -->
   <div>
     <label for="displayName">DisplayName</label>
-    <input formControlName="displayName" type="text" />
+    <input id="displayName" formControlName="displayName" type="text" />
 
     @if (form.get('displayName')?.invalid && form.get('displayName')?.touched) {
       <div>
@@ -71,7 +72,7 @@
 
   <!-- role form -->
   <div>
-    <label for="roles">Role</label>
+    <label for="role">Role</label>
     <select id="role" formControlName="role" placeholder=" ">
       <option [value]="null">-</option>
       @for (role of allRoles; track $index) {

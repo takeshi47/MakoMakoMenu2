@@ -48,7 +48,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[Assert\NotBlank(groups: ['registration'])]
-    #[Assert\Length(min: 8, groups: ['registration'])]
+    #[Assert\Length(min: 8)]
     private ?string $plainPassword = null;
 
     #[ORM\Column(length: 20, nullable: true)]
@@ -137,15 +137,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->password = $password;
 
         return $this;
-    }
-
-    /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
-     */
-    public function __serialize(): array
-    {
-        $data = (array) $this;
-        return $data;
     }
 
     public function getPlainPassword(): ?string
