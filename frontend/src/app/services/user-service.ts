@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { User } from '../models/user';
 
 @Injectable({
@@ -16,6 +16,8 @@ export class UserService {
   }
 
   getUser(userId: number): Observable<User> {
+    console.log(1);
+
     return this.http.get<User>(`${this.baseUrl}/${userId}`);
   }
 
@@ -30,7 +32,24 @@ export class UserService {
     return this.http.post<Record<string, string[]>>(`${this.baseUrl}/${userId}`, data);
   }
 
+  delete(id: number, token: string): Observable<void> {
+    console.log(id, token);
+
+    const headers = new HttpHeaders({
+      'X-CSRF-TOKEN': token,
+    });
+    return this.http.delete<void>(`${this.baseUrl}/${id}`, { headers });
+  }
+
   fetchCsrfToken(): Observable<{ token: string }> {
     return this.http.get<{ token: string }>(`${this.baseUrl}/csrf-token`);
+  }
+
+  fetchCsrfTokenDelete(userId: number): Observable<string> {
+    return this.http.get<{ token: string }>(`${this.baseUrl}/csrf-token/delete/${userId}`).pipe(
+      map((csrfToken) => {
+        return csrfToken.token;
+      }),
+    );
   }
 }

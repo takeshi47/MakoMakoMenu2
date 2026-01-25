@@ -83,6 +83,14 @@ final class UserController extends AbstractController
         return $this->json(['token' => $token]);
     }
 
+    #[Route(path: '/csrf-token/delete/{id}', name: 'csrf_token_delete', methods: ['GET'])]
+    public function getCsrtTokenDelete(CsrfTokenManagerInterface $csrfTokenManager, int $id): Response
+    {
+        $token = $csrfTokenManager->getToken('delete_user'.$id)->getValue();
+
+        return $this->json(['token' => $token]);
+    }
+
     // #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
     // public function show(User $user): Response
     // {
@@ -109,16 +117,20 @@ final class UserController extends AbstractController
     //     ]);
     // }
 
-    // #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
-    // public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
-    // {
-    //     if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->getPayload()->getString('_token'))) {
-    //         $entityManager->remove($user);
-    //         $entityManager->flush();
-    //     }
+    #[Route('/{id}', name: 'user_delete', methods: ['DELETE'])]
+    public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    {
+        $submittedToken = $request->headers->get('X-CSRF-TOKEN');
 
-    //     return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
-    // }
+        if (!$this->isCsrfTokenValid('delete_user'.$user->getId(), $submittedToken)) {
+            return $this->json(['error' => 'Invalid CSRF token.'], Response::HTTP_FORBIDDEN);
+        }
+
+        $entityManager->remove($user);
+        $entityManager->flush();
+
+        return new Response(null);
+    }
 
     private function getErrorsFromForm(FormInterface $form): array
     {

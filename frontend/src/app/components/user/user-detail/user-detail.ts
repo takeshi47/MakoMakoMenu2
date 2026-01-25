@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 export class UserDetail implements OnInit {
   private activatedRouter = inject(ActivatedRoute);
   private userService = inject(UserService);
+  private _csrfTokenDelete: string | null = null;
 
   user$!: Observable<User>;
 
@@ -33,6 +34,28 @@ export class UserDetail implements OnInit {
       )
       .subscribe((user) => {
         console.log(user);
+
+        if (!user.id) {
+          return;
+        }
+
+        this.userService
+          .fetchCsrfTokenDelete(user.id)
+          .subscribe((token) => (this._csrfTokenDelete = token));
       });
+  }
+
+  protected deleteUser(id: number): void {
+    if (!this.csrfTokenDelete) {
+      return;
+    }
+
+    this.userService.delete(id, this.csrfTokenDelete).subscribe({
+      error: (error) => alert(error.message),
+    });
+  }
+
+  protected get csrfTokenDelete(): string | null {
+    return this._csrfTokenDelete;
   }
 }
