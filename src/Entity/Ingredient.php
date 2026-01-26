@@ -7,8 +7,11 @@ namespace App\Entity;
 use App\Repository\IngredientRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: IngredientRepository::class)]
+#[UniqueEntity(fields: ['name'], message: 'There is already an ingredient with this name')]
 class Ingredient
 {
     use TimestampableEntity;
@@ -19,9 +22,12 @@ class Ingredient
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 30, unique: true)]
+    #[Assert\Length(max: 30)]
+    #[Assert\NotBlank()]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Assert\NotNull()]
     private ?bool $isStock = null;
 
     public function getId(): ?int

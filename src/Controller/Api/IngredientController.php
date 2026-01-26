@@ -40,7 +40,7 @@ final class IngredientController extends AbstractController
             return new Response(null, Response::HTTP_CREATED);
         }
 
-        return $this->json($this->getErrorsFromForm($form));
+        return $this->json($this->getErrorsFromForm($form), Response::HTTP_BAD_REQUEST);
     }
 
     private function getErrorsFromForm(FormInterface $form): array

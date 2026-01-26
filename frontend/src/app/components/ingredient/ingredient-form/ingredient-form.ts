@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IngredientService } from '../../../services/ingredient-service';
 import { CommonModule } from '@angular/common';
@@ -16,12 +16,13 @@ export interface BackendFormErrors {
 export class IngredientForm implements OnInit {
   private ingredientService = inject(IngredientService);
   private fb = inject(NonNullableFormBuilder);
+  private cdr = inject(ChangeDetectorRef);
 
   private csrfToken = '';
   protected errorMessages: BackendFormErrors | null = null;
 
   form = this.fb.group({
-    name: [''],
+    name: ['', Validators.required],
     isStock: [true, Validators.required],
   });
 
@@ -30,7 +31,9 @@ export class IngredientForm implements OnInit {
   }
 
   onSubmit(): void {
-    console.log();
+    if (this.form.invalid) {
+      return;
+    }
 
     const payload = {
       ...this.form.getRawValue(),
@@ -38,8 +41,15 @@ export class IngredientForm implements OnInit {
     };
 
     this.ingredientService.create(payload).subscribe({
-      next: (res) => console.log(res),
-      error: (error) => console.log(error),
+      next: (res) => {
+        console.log(res);
+      },
+      error: (error) => {
+        console.log(error.error);
+
+        this.errorMessages = error.error;
+        this.cdr.markForCheck();
+      },
     });
   }
 }
