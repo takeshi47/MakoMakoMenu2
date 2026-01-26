@@ -1,0 +1,12 @@
+<p>ingredient-list works!</p>
+<p>
+  <a routerLink="/ingredient/create">New ingredient</a>
+</p>
+
+@if (ingredients$ | async; as ingredients) {
+  @for (ingredient of ingredients; track $index) {
+    name: {{ ingredient.name }} <br />
+    is stock: {{ ingredient.isStock | json }}
+    <hr />
+  }
+}

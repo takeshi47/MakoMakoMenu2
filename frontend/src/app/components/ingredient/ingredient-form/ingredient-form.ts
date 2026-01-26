@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IngredientService } from '../../../services/ingredient-service';
 import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
 
 export interface BackendFormErrors {
   [key: string]: BackendFormErrors;
@@ -9,7 +10,7 @@ export interface BackendFormErrors {
 
 @Component({
   selector: 'app-ingredient-form',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './ingredient-form.html',
   styleUrl: './ingredient-form.scss',
 })
@@ -17,6 +18,7 @@ export class IngredientForm implements OnInit {
   private ingredientService = inject(IngredientService);
   private fb = inject(NonNullableFormBuilder);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   private csrfToken = '';
   protected errorMessages: BackendFormErrors | null = null;
@@ -43,6 +45,7 @@ export class IngredientForm implements OnInit {
     this.ingredientService.create(payload).subscribe({
       next: (res) => {
         console.log(res);
+        this.router.navigate(['ingredient/list']);
       },
       error: (error) => {
         console.log(error.error);

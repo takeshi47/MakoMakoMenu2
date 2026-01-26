@@ -15,6 +15,10 @@ export class IngredientService {
     return this.http.post<void>(`${this.baseUrl}/new`, data);
   }
 
+  getIngredients(): Observable<Ingredient[]> {
+    return this.http.get<Ingredient[]>(`${this.baseUrl}`);
+  }
+
   getCsrfToken(): Observable<string> {
     return this.http
       .get<{ token: string }>(`${this.baseUrl}/csrf-token`)
