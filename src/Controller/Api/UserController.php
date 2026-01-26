@@ -76,7 +76,7 @@ final class UserController extends AbstractController
     }
 
     #[Route(path: '/csrf-token', name: 'csrf_token', methods: ['GET'])]
-    public function getCsrtToken(CsrfTokenManagerInterface $csrfTokenManager): Response
+    public function getCsrfToken(CsrfTokenManagerInterface $csrfTokenManager): Response
     {
         $token = $csrfTokenManager->getToken('user')->getValue();
 
@@ -84,7 +84,7 @@ final class UserController extends AbstractController
     }
 
     #[Route(path: '/csrf-token/delete/{id}', name: 'csrf_token_delete', methods: ['GET'])]
-    public function getCsrtTokenDelete(CsrfTokenManagerInterface $csrfTokenManager, int $id): Response
+    public function getCsrfTokenDelete(CsrfTokenManagerInterface $csrfTokenManager, int $id): Response
     {
         $token = $csrfTokenManager->getToken('delete_user'.$id)->getValue();
 
