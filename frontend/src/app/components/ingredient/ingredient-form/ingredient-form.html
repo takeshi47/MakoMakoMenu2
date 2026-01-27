@@ -1,4 +1,8 @@
-<p>ingredient-form works!</p>
+@if (editMode) {
+  <p>ingredient edit</p>
+} @else {
+  <p>ingredient create</p>
+}
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <!-- name form -->

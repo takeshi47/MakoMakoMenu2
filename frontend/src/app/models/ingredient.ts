@@ -1,4 +1,5 @@
 export interface Ingredient {
-  name: string | null;
+  id: number;
+  name: string;
   isStock: boolean;
 }

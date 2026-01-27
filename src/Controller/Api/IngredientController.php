@@ -43,6 +43,29 @@ final class IngredientController extends AbstractController
         return $this->json($this->getErrorsFromForm($form), Response::HTTP_BAD_REQUEST);
     }
 
+    #[Route(path: '/{id}', name: 'fetch', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function getIngredient(Ingredient $ingredient): Response
+    {
+        return $this->json($ingredient);
+    }
+
+    #[Route(path: '/edit/{id}', name: 'edit', methods: ['POST'])]
+    public function edit(Request $request, Ingredient $ingredient, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(IngredientType::class, $ingredient);
+        $data = json_decode($request->getContent(), true);
+        $form->submit($data);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($ingredient);
+            $entityManager->flush();
+
+            return new Response(null, Response::HTTP_CREATED);
+        }
+
+        return $this->json($this->getErrorsFromForm($form), Response::HTTP_BAD_REQUEST);
+    }
+
     private function getErrorsFromForm(FormInterface $form): array
     {
         $errors = [];

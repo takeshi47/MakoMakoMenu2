@@ -16,5 +16,6 @@ export const routes: Routes = [
   { path: 'user/edit/:id', component: UserForm },
   { path: 'ingredient/list', component: IngredientList },
   { path: 'ingredient/create', component: IngredientForm },
+  { path: 'ingredient/edit/:id', component: IngredientForm },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
 ];

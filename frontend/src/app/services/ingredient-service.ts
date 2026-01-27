@@ -11,12 +11,30 @@ export class IngredientService {
 
   private baseUrl = '/api/ingredient';
 
-  create(data: Ingredient & { _token: string }): Observable<void> {
+  create(data: Partial<Ingredient> & { _token: string }): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/new`, data);
   }
 
   getIngredients(): Observable<Ingredient[]> {
     return this.http.get<Ingredient[]>(`${this.baseUrl}`);
+  }
+
+  getIngredient(id: number): Observable<Ingredient | null> {
+    return this.http.get<Ingredient | null>(`${this.baseUrl}/${id}`).pipe(
+      map((ingredient) => {
+        if (ingredient) {
+          return {
+            ...ingredient,
+            name: ingredient.name ?? '',
+          };
+        }
+        return null;
+      }),
+    );
+  }
+
+  edit(id: number, data: Partial<Ingredient> & { _token: string }): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/edit/${id}`, data);
   }
 
   getCsrfToken(): Observable<string> {
