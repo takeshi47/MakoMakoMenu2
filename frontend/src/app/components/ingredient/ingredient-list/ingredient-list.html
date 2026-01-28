@@ -5,7 +5,8 @@
 
 @if (ingredients$ | async; as ingredients) {
   @for (ingredient of ingredients; track $index) {
-    name: {{ ingredient.name }} <br />
+    name: <a [routerLink]="['/ingredient/detail', ingredient.id]">{{ ingredient.name }}</a>
+    <br />
     is stock: {{ ingredient.isStock | json }}
     <a [routerLink]="['/ingredient/edit', ingredient.id]">Edit ingredient</a>
 

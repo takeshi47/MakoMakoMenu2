@@ -19,18 +19,8 @@ export class IngredientService {
     return this.http.get<Ingredient[]>(`${this.baseUrl}`);
   }
 
-  getIngredient(id: number): Observable<Ingredient | null> {
-    return this.http.get<Ingredient | null>(`${this.baseUrl}/${id}`).pipe(
-      map((ingredient) => {
-        if (ingredient) {
-          return {
-            ...ingredient,
-            name: ingredient.name ?? '',
-          };
-        }
-        return null;
-      }),
-    );
+  getIngredient(id: number): Observable<Ingredient> {
+    return this.http.get<Ingredient>(`${this.baseUrl}/${id}`);
   }
 
   edit(id: number, data: Partial<Ingredient> & { _token: string }): Observable<void> {
