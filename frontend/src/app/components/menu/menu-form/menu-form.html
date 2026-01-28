@@ -1,0 +1,33 @@
+<h1>メニュー登録</h1>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <label for="name">メニュー名：</label>
+  <input type="text" id="name" formControlName="name" placeholder="たこ焼き" />
+  @if (form.get('name')?.touched && form.get('name')?.invalid) {
+    @if (form.get('name')?.hasError('required')) {
+      <p>name is required</p>
+    }
+  }
+  @if (errorMessages && errorMessages['name']) {
+    @for (errorMessage of errorMessages['name'] | keyvalue; track $index) {
+      {{ errorMessage.value }}
+    }
+  }
+  <hr />
+  <label for="ingredients">使う材料</label>
+  <select id="ingredients" formControlName="ingredients" multiple>
+    @for (ingredient of availableIngredients; track $index) {
+      <option [value]="ingredient.id" [disabled]="!ingredient.isStock">
+        {{ ingredient.name }}
+      </option>
+    }
+  </select>
+  @if (errorMessages && errorMessages['ingredients']) {
+    @for (errorMessage of errorMessages['ingredients'] | keyvalue; track $index) {
+      {{ errorMessage.value }}
+    }
+  }
+  <button>onSubmit</button>
+</form>
+
+<p>menu-form works!</p>
