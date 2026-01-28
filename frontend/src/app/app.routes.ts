@@ -7,6 +7,7 @@ import { UserDetail } from './components/user/user-detail/user-detail';
 import { IngredientForm } from './components/ingredient/ingredient-form/ingredient-form';
 import { IngredientList } from './components/ingredient/ingredient-list/ingredient-list';
 import { IngredientDetail } from './components/ingredient/ingredient-detail/ingredient-detail';
+import { MenuForm } from './components/menu/menu-form/menu-form';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -19,5 +20,6 @@ export const routes: Routes = [
   { path: 'ingredient/create', component: IngredientForm },
   { path: 'ingredient/edit/:id', component: IngredientForm },
   { path: 'ingredient/detail/:id', component: IngredientDetail },
+  { path: 'menu/create', component: MenuForm },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
 ];
