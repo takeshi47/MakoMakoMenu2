@@ -1,2 +1,5 @@
 <p>ingredient-detail works!</p>
-{{ ingredient$ | async | json }}
+@if (ingredient$ | async; as ingredient) {
+  {{ ingredient | json }}
+  <button (click)="delete(ingredient.id)">削除</button>
+}

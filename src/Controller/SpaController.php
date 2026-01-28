@@ -20,7 +20,7 @@ final class SpaController extends AbstractController
     #[Route(path: '/login', name: 'app_login')]
     #[Route(path: '/logout', name: 'app_logout')]
     #[Route(path: '/', name: 'spa_index')]
-    #[Route(path: '/{path}', name: 'spa_fallback', requirements: ['path' => '.*'], priority: -1)]
+    #[Route(path: '/{path}', name: 'spa_fallback', requirements: ['path' => '^(?!api).*'], priority: -1)]
     public function index(): Response
     {
         $path = "{$this->projectDir}/public/{$this->env}/index.html";

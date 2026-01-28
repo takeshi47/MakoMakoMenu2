@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { Ingredient } from '../models/ingredient';
@@ -27,9 +27,22 @@ export class IngredientService {
     return this.http.post<void>(`${this.baseUrl}/edit/${id}`, data);
   }
 
+  delete(id: number, token: string): Observable<void> {
+    const headers = new HttpHeaders({
+      'X-CSRF_TOKEN': token,
+    });
+    return this.http.delete<void>(`${this.baseUrl}/delete/${id}`, { headers: headers });
+  }
+
   getCsrfToken(): Observable<string> {
     return this.http
       .get<{ token: string }>(`${this.baseUrl}/csrf-token`)
+      .pipe(map((csrfToken) => csrfToken.token));
+  }
+
+  getCsrfTokenDelete(id: number): Observable<string> {
+    return this.http
+      .get<{ token: string }>(`${this.baseUrl}/csrf-token/delete/${id}`)
       .pipe(map((csrfToken) => csrfToken.token));
   }
 }

@@ -95,6 +95,29 @@ final class IngredientController extends AbstractController
         return $this->json(['token' => $token]);
     }
 
+    #[Route(path: '/csrf-token/delete/{id}', name: 'csrf_token_delete', methods: ['GET'])]
+    public function getCsrfTokenDelete(CsrfTokenManagerInterface $csrfTokenManager, int $id): Response
+    {
+        $token = $csrfTokenManager->getToken('delete_ingredient'.$id)->getValue();
+
+        return $this->json(['token' => $token]);
+    }
+
+    #[Route(path: '/delete/{id}', name: 'delete', methods: ['DELETE'])]
+    public function delete(Request $request, Ingredient $ingredient, EntityManagerInterface $entityManager): Response
+    {
+        $submittedToken = $request->headers->get('X-CSRF-TOKEN');
+
+        if (!$this->isCsrfTokenValid('delete_ingredient'.$ingredient->getId(), $submittedToken)) {
+            return $this->json(['error' => 'Invalid CSRF TOKEN']);
+        }
+
+        $entityManager->remove($ingredient);
+        $entityManager->flush();
+
+        return new Response();
+    }
+
     // #[Route('/{id}', name: 'show', methods: ['GET'])]
     // public function show(Ingredient $ingredient): Response
     // {
