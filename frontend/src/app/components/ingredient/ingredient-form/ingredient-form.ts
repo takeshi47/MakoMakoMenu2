@@ -22,7 +22,7 @@ export class IngredientForm implements OnInit {
   private fb = inject(NonNullableFormBuilder);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
-  private route = inject(ActivatedRoute); // activatedRouter から route に変更
+  private activatedRouter = inject(ActivatedRoute);
 
   // --- 2. 状態管理 ---
   private ingredientId: number | null = null;
@@ -59,7 +59,7 @@ export class IngredientForm implements OnInit {
    * URLのパラメータを監視し、IDが存在すれば食材データを読み込んでフォームにセットする
    */
   private loadIngredientFromRoute(): void {
-    this.route.paramMap
+    this.activatedRouter.paramMap
       .pipe(
         switchMap((params) => {
           const id = params.get('id');
