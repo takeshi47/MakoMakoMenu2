@@ -9,8 +9,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
+#[UniqueEntity(fields: ['name'], message: 'There is already an menu with this name')]
 class Menu
 {
     use TimestampableEntity;
@@ -21,12 +24,15 @@ class Menu
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 50, unique: true)]
+    #[Assert\Length(max: 50)]
+    #[Assert\NotBlank()]
     private ?string $name = null;
 
     /**
      * @var Collection<int, Ingredient>
      */
     #[ORM\ManyToMany(targetEntity: Ingredient::class)]
+    #[Assert\Count(min: 1)]
     private Collection $ingredients;
 
     public function __construct()
