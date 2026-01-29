@@ -23,6 +23,14 @@ export class MenuService {
     return this.http.get<Menu[]>(this.baseUrl);
   }
 
+  fetch(id: number): Observable<Menu> {
+    return this.http.get<Menu>(`${this.baseUrl}/${id}`);
+  }
+
+  edit(id: number, data: Partial<MenuRequest> & { _token: string }): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/${id}`, data);
+  }
+
   fetchCsrfToken(): Observable<string> {
     return this.http
       .get<{ token: string }>(`${this.baseUrl}/csrf-token`)
