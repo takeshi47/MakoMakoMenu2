@@ -6,6 +6,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Menu;
 use App\Form\MenuType;
+use App\Repository\MenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -17,14 +18,6 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 #[Route('/menu', name: 'menu_')]
 final class MenuController extends AbstractController
 {
-    // #[Route(name: 'app_menu_index', methods: ['GET'])]
-    // public function index(MenuRepository $menuRepository): Response
-    // {
-    //     return $this->render('menu/index.html.twig', [
-    //         'menus' => $menuRepository->findAll(),
-    //     ]);
-    // }
-
     #[Route('/new', name: 'new', methods: ['POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -42,6 +35,12 @@ final class MenuController extends AbstractController
         }
 
         return $this->json($this->getErrorsFromForm($form), Response::HTTP_BAD_REQUEST);
+    }
+
+    #[Route(name: 'fetch_all', methods: ['GET'])]
+    public function index(MenuRepository $menuRepository): Response
+    {
+        return $this->json($menuRepository->findAll());
     }
 
     #[Route(path: '/csrf-token', name: 'csrf_token', methods: ['GET'])]
