@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
+import { Menu } from '../models/menu';
 
 export interface MenuRequest {
   name: string;
@@ -16,6 +17,10 @@ export class MenuService {
 
   create(data: Partial<MenuRequest> & { _token: string }): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/new`, data);
+  }
+
+  fetchAll(): Observable<Menu[]> {
+    return this.http.get<Menu[]>(this.baseUrl);
   }
 
   fetchCsrfToken(): Observable<string> {
