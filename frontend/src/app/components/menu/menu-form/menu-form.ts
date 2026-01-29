@@ -4,6 +4,8 @@ import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Ingredient } from '../../../models/ingredient';
 import { IngredientService } from '../../../services/ingredient-service';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { Observable, of, switchMap } from 'rxjs';
 
 export interface BackendFormErrors {
   [key: string]: BackendFormErrors;
@@ -20,7 +22,9 @@ export class MenuForm implements OnInit {
   private ingredientService = inject(IngredientService);
   private fb = inject(NonNullableFormBuilder);
   private cdr = inject(ChangeDetectorRef);
+  private activatedRouter = inject(ActivatedRoute);
 
+  private menuId: number | null = null;
   private csrfToken = '';
   protected errorMessages: BackendFormErrors | null = null;
   protected availableIngredients: Ingredient[] = [];
@@ -35,15 +39,42 @@ export class MenuForm implements OnInit {
     this.ingredientService
       .getIngredients()
       .subscribe((ingredients) => (this.availableIngredients = ingredients));
+
+    this.activatedRouter.paramMap
+      .pipe(
+        switchMap((params) => {
+          const id = params.get('id');
+
+          if (id) {
+            this.menuId = Number(id);
+            return this.menuService.fetch(this.menuId);
+          }
+
+          return of(null);
+        }),
+      )
+      .subscribe((menu) => {
+        if (!menu) {
+          return;
+        }
+
+        const ingredientIds = menu.ingredients.map((ingredient) => ingredient.id);
+
+        this.form.patchValue({
+          name: menu.name,
+          ingredients: ingredientIds,
+        });
+      });
   }
 
   onSubmit(): void {
-    const payload = {
-      ...this.form.getRawValue(),
-      _token: this.csrfToken,
-    };
+    const requestOption = this.isEditMode ? this.edit() : this.create();
 
-    this.menuService.create(payload).subscribe({
+    if (!requestOption) {
+      return;
+    }
+
+    requestOption.subscribe({
       error: (error) => {
         console.log(error);
         this.errorMessages = error.error;
@@ -51,5 +82,31 @@ export class MenuForm implements OnInit {
         this.cdr.markForCheck();
       },
     });
+  }
+
+  private create(): Observable<void> {
+    const payload = {
+      ...this.form.getRawValue(),
+      _token: this.csrfToken,
+    };
+
+    return this.menuService.create(payload);
+  }
+
+  private edit(): Observable<void> {
+    const payload = {
+      ...this.form.getRawValue(),
+      _token: this.csrfToken,
+    };
+
+    if (!this.menuId) {
+      return of();
+    }
+
+    return this.menuService.edit(this.menuId, payload);
+  }
+
+  protected get isEditMode(): boolean {
+    return this.menuId !== null;
   }
 }
