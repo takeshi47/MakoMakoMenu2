@@ -3,8 +3,9 @@
 
 @if (menus$ | async; as menus) {
   @for (menu of menus; track $index) {
-    {{ menu | json }} <br />
-
+    <p>
+      <a [routerLink]="['/menu', menu.id]">{{ menu.name }}</a>
+    </p>
     <p><a [routerLink]="['/menu/edit', menu.id]">menu edit</a></p>
   }
 }

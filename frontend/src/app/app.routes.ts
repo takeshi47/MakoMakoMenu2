@@ -9,6 +9,7 @@ import { IngredientList } from './components/ingredient/ingredient-list/ingredie
 import { IngredientDetail } from './components/ingredient/ingredient-detail/ingredient-detail';
 import { MenuForm } from './components/menu/menu-form/menu-form';
 import { MenuList } from './components/menu/menu-list/menu-list';
+import { MenuDetail } from './components/menu/menu-detail/menu-detail';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -24,5 +25,6 @@ export const routes: Routes = [
   { path: 'menu/list', component: MenuList },
   { path: 'menu/create', component: MenuForm },
   { path: 'menu/edit/:id', component: MenuForm },
+  { path: 'menu/:id', component: MenuDetail },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
 ];
