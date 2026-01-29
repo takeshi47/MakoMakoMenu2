@@ -23,5 +23,6 @@ export const routes: Routes = [
   { path: 'ingredient/detail/:id', component: IngredientDetail },
   { path: 'menu/list', component: MenuList },
   { path: 'menu/create', component: MenuForm },
+  { path: 'menu/edit/:id', component: MenuForm },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
 ];
