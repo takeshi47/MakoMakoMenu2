@@ -43,6 +43,29 @@ final class MenuController extends AbstractController
         return $this->json($menuRepository->findAll());
     }
 
+    #[Route(path: '/{id}', name: 'update', methods: ['PUT'], requirements: ['id' => '\d+'])]
+    public function update(Request $request, Menu $menu, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(MenuType::class, $menu);
+        $data = json_decode($request->getContent(), true);
+        $form->submit($data);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($menu);
+            $entityManager->flush();
+
+            return new Response(null, Response::HTTP_CREATED);
+        }
+
+        return $this->json($this->getErrorsFromForm($form), Response::HTTP_BAD_REQUEST);
+    }
+
+    #[Route(path: '/{id}', name: 'fetch', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function fetch(Menu $menu): Response
+    {
+        return $this->json($menu);
+    }
+
     #[Route(path: '/csrf-token', name: 'csrf_token', methods: ['GET'])]
     public function getCsrfToken(CsrfTokenManagerInterface $csrfTokenManager): Response
     {
