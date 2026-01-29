@@ -38,7 +38,7 @@ final class MenuController extends AbstractController
     }
 
     #[Route(name: 'fetch_all', methods: ['GET'])]
-    public function index(MenuRepository $menuRepository): Response
+    public function fetchAll(MenuRepository $menuRepository): Response
     {
         return $this->json($menuRepository->findAll());
     }
