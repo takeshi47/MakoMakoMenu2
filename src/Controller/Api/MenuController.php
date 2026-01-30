@@ -66,10 +66,33 @@ final class MenuController extends AbstractController
         return $this->json($menu);
     }
 
+    #[Route(path: '/delete/{id}', name: 'delete', methods: ['DELETE'])]
+    public function delete(Request $request, Menu $menu, EntityManagerInterface $entityManager): Response
+    {
+        $submittedToken = $request->headers->get('X-CSRF-TOKEN');
+
+        if (!$this->isCsrfTokenValid('delete_menu'.$menu->getId(), $submittedToken)) {
+            return $this->json(['error' => 'Invalid CSRF TOKEN'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $entityManager->remove($menu);
+        $entityManager->flush();
+
+        return new Response();
+    }
+
     #[Route(path: '/csrf-token', name: 'csrf_token', methods: ['GET'])]
     public function getCsrfToken(CsrfTokenManagerInterface $csrfTokenManager): Response
     {
         $token = $csrfTokenManager->getToken('menu')->getValue();
+
+        return $this->json(['token' => $token]);
+    }
+
+    #[Route(path: '/csrf-token/delete/{id}', name: 'csrf_token_delete', methods: ['GET'])]
+    public function getCsrfTokenDelete(int $id, CsrfTokenManagerInterface $csrfTokenManager): Response
+    {
+        $token = $csrfTokenManager->getToken('delete_menu'.$id)->getValue();
 
         return $this->json(['token' => $token]);
     }
