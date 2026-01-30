@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { Menu } from '../models/menu';
@@ -31,9 +31,23 @@ export class MenuService {
     return this.http.put<void>(`${this.baseUrl}/${id}`, data);
   }
 
+  delete(id: number, token: string): Observable<void> {
+    const headers = new HttpHeaders({
+      'X-CSRF_TOKEN': token,
+    });
+
+    return this.http.delete<void>(`${this.baseUrl}/delete/${id}`, { headers: headers });
+  }
+
   fetchCsrfToken(): Observable<string> {
     return this.http
       .get<{ token: string }>(`${this.baseUrl}/csrf-token`)
+      .pipe(map((csrfToken) => csrfToken.token));
+  }
+
+  fetchCsrfTokenDelete(id: number): Observable<string> {
+    return this.http
+      .get<{ token: string }>(`${this.baseUrl}/csrf-token/delete/${id}`)
       .pipe(map((csrfToken) => csrfToken.token));
   }
 }

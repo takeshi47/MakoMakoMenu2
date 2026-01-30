@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { MenuService } from '../../../services/menu-service';
 import { Observable, of, switchMap } from 'rxjs';
 import { Menu } from '../../../models/menu';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -14,11 +14,15 @@ import { CommonModule } from '@angular/common';
 export class MenuDetail implements OnInit {
   private menuService = inject(MenuService);
   private activatedRouter = inject(ActivatedRoute);
+  private router = inject(Router);
 
+  private _csrfTokenDelete: string | null = null;
   protected menuId: number | null = null;
   protected menu$!: Observable<Menu>;
 
   ngOnInit(): void {
+    console.log(0);
+
     this.activatedRouter.paramMap
       .pipe(
         switchMap((params) => {
@@ -34,6 +38,25 @@ export class MenuDetail implements OnInit {
           return of(null);
         }),
       )
-      .subscribe((menu) => console.log(menu));
+      .subscribe(() => {
+        if (!this.menuId) {
+          return;
+        }
+
+        this.menuService
+          .fetchCsrfTokenDelete(this.menuId)
+          .subscribe((token) => (this._csrfTokenDelete = token));
+      });
+  }
+
+  protected delete(): void {
+    if (!this._csrfTokenDelete || !this.menuId) {
+      return;
+    }
+
+    this.menuService.delete(this.menuId, this._csrfTokenDelete).subscribe({
+      next: () => this.router.navigate(['/menu/list']),
+      error: (er) => console.log(er),
+    });
   }
 }
