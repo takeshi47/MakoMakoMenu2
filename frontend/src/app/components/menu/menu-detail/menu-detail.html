@@ -1,8 +1,4 @@
-
-
 @if (menu$ | async; as menu) {
-
-    {{ menu | json }}
-
-    <button (click)="delete()">delete</button>
+  {{ menu | json }}
+  <button (click)="delete(menu.id)">delete</button>
 }
