@@ -71,7 +71,7 @@ final class MenuController extends AbstractController
     {
         $submittedToken = $request->headers->get('X-CSRF-TOKEN');
 
-        if (!$this->isCsrfTokenValid('delete_menu_'.$menu->getId(), $submittedToken)) {
+        if (!$this->isCsrfTokenValid('menu_delete_'.$menu->getId(), $submittedToken)) {
             return $this->json(['error' => 'Invalid CSRF TOKEN'], Response::HTTP_BAD_REQUEST);
         }
 

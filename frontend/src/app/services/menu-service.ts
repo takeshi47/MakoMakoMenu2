@@ -40,14 +40,18 @@ export class MenuService {
   }
 
   fetchCsrfToken(): Observable<string> {
+    const tokenId = 'menu_create';
+
     return this.http
-      .get<{ token: string }>(`${this.baseUrl}/csrf-token`)
+      .get<{ token: string }>(`${this.baseUrl}/csrf-token/${tokenId}`)
       .pipe(map((csrfToken) => csrfToken.token));
   }
 
   fetchCsrfTokenDelete(id: number): Observable<string> {
+    const tokenId = `menu_delete_${id}`;
+
     return this.http
-      .get<{ token: string }>(`${this.baseUrl}/csrf-token/delete/${id}`)
+      .get<{ token: string }>(`${this.baseUrl}/csrf-token/${tokenId}`)
       .pipe(map((csrfToken) => csrfToken.token));
   }
 }
