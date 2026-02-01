@@ -42,11 +42,14 @@ export class UserService {
   }
 
   fetchCsrfToken(): Observable<{ token: string }> {
-    return this.http.get<{ token: string }>(`${this.baseUrl}/csrf-token`);
+    const tokenId = 'user_create';
+    return this.http.get<{ token: string }>(`${this.baseUrl}/csrf-token/${tokenId}`);
   }
 
   fetchCsrfTokenDelete(userId: number): Observable<string> {
-    return this.http.get<{ token: string }>(`${this.baseUrl}/csrf-token/delete/${userId}`).pipe(
+    const tokenId = `delete_user_${userId}`;
+
+    return this.http.get<{ token: string }>(`${this.baseUrl}/csrf-token/${tokenId}`).pipe(
       map((csrfToken) => {
         return csrfToken.token;
       }),
