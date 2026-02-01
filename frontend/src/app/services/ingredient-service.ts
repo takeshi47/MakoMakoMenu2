@@ -34,15 +34,19 @@ export class IngredientService {
     return this.http.delete<void>(`${this.baseUrl}/delete/${id}`, { headers: headers });
   }
 
-  getCsrfToken(): Observable<string> {
+  fetchCsrfToken(): Observable<string> {
+    const tokenId = 'create_ingredient';
+
     return this.http
-      .get<{ token: string }>(`${this.baseUrl}/csrf-token`)
+      .get<{ token: string }>(`${this.baseUrl}/csrf-token/${tokenId}`)
       .pipe(map((csrfToken) => csrfToken.token));
   }
 
-  getCsrfTokenDelete(id: number): Observable<string> {
+  fetchCsrfTokenDelete(id: number): Observable<string> {
+    const tokenId = `delete_ingredient_${id}`;
+
     return this.http
-      .get<{ token: string }>(`${this.baseUrl}/csrf-token/delete/${id}`)
+      .get<{ token: string }>(`${this.baseUrl}/csrf-token/${tokenId}`)
       .pipe(map((csrfToken) => csrfToken.token));
   }
 }

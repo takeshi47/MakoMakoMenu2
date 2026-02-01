@@ -36,7 +36,7 @@ export class IngredientDetail implements OnInit {
         }
 
         this.ingredientService
-          .getCsrfTokenDelete(ingredient.id)
+          .fetchCsrfTokenDelete(ingredient.id)
           .subscribe((token) => (this._csrfTokenDelete = token));
       });
   }

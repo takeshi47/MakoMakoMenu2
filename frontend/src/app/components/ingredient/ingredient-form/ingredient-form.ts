@@ -37,7 +37,7 @@ export class IngredientForm implements OnInit {
 
   // --- 4. ライフサイクル ---
   ngOnInit(): void {
-    this.ingredientService.getCsrfToken().subscribe((token) => (this.csrfToken = token));
+    this.ingredientService.fetchCsrfToken().subscribe((token) => (this.csrfToken = token));
     this.loadIngredientFromRoute();
   }
 
