@@ -42,7 +42,7 @@ export class UserService {
   }
 
   fetchCsrfToken(): Observable<{ token: string }> {
-    const tokenId = 'user_create';
+    const tokenId = 'create_user';
     return this.http.get<{ token: string }>(`${this.baseUrl}/csrf-token/${tokenId}`);
   }
 

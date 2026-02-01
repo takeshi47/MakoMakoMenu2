@@ -126,7 +126,7 @@ final class UserController extends AbstractController
     {
         $submittedToken = $request->headers->get('X-CSRF-TOKEN');
 
-        if (!$this->isCsrfTokenValid('delete_user_'.$user->getId(), $submittedToken)) {
+        if (!$this->isCsrfTokenValid('user_delete_'.$user->getId(), $submittedToken)) {
             return $this->json(['error' => 'Invalid CSRF token.'], Response::HTTP_FORBIDDEN);
         }
 
@@ -156,26 +156,4 @@ final class UserController extends AbstractController
 
         return $errors; // 整形されたエラー配列を返す
     }
-
-    // private function getErrorsFromForm2(FormInterface $form): array
-    // {
-    //     $errors = [];
-
-    //     foreach ($form->getErrors(true, true) as $formError) {
-    //         $formErrors[] = $formError;
-
-    //         $propertyPath = (string) $formError->getOrigin()?->getName();
-    //         $parentName = $formError->getOrigin()->getParent()->getName();
-
-    //         if (!$propertyPath) {
-    //             $errors['_global'][] = $formError->getMessage();
-    //         } elseif ($propertyPath === $parentName) {
-    //             $errors[$propertyPath][] = $formError->getMessage();
-    //         } else {
-    //             $errors[$parentName][$propertyPath][] = $formError->getMessage();
-    //         }
-    //     }
-
-    //     return $errors;
-    // }
 }
