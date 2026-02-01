@@ -1,0 +1,127 @@
+// --- "どうぶつの森"風カラーパレット ---
+$ac-sky: #87ceeb; // 空色
+$ac-green: #5cb85c; // 葉っぱの緑
+$ac-brown: #8b4513; // 木の茶色
+$ac-cream: #fdf5e6; // クリーム色
+$ac-text: #5c4033; // 濃い茶色 (テキスト用)
+$ac-orange: #ff7f50; // オレンジ (アクセント)
+
+// --- フォント設定 ---
+$ac-font: 'M PLUS Rounded 1c', sans-serif;
+
+// --- コンポーネント全体を画面いっぱいに ---
+:host {
+  display: block;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  font-family: $ac-font;
+}
+
+// --- 背景と中央寄せ ---
+.login-wrapper {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: $ac-sky;
+  position: relative; // 雲のアニメーション用
+}
+
+// --- "どうぶつの森"風カード ---
+.ac-card {
+  width: 100%;
+  max-width: 420px;
+  background: $ac-cream;
+  border-radius: 2rem;
+  border: 4px solid $ac-brown;
+  box-shadow:
+    0 10px 0px 0px darken($ac-brown, 10%),
+    0 15px 25px rgba(0, 0, 0, 0.2);
+  color: $ac-text;
+  position: relative;
+  z-index: 10;
+
+  h2 {
+    font-weight: 800; // 太めのフォント
+    color: $ac-brown;
+  }
+}
+
+// --- フォーム要素のスタイル ---
+.form-floating > .form-control {
+  background-color: #fff;
+  border: 3px solid darken($ac-cream, 15%);
+  border-radius: 1.5rem;
+  transition: all 0.2s ease;
+
+  &:focus {
+    background-color: #fff;
+    border-color: $ac-orange;
+    box-shadow: 0 0 0 0.25rem rgba($ac-orange, 0.3);
+  }
+}
+
+.form-floating > label {
+  color: lighten($ac-text, 20%);
+}
+
+.btn-primary {
+  background-color: $ac-green;
+  border: none;
+  border-radius: 1.5rem;
+  padding: 0.8rem 1rem;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 5px 0px 0px darken($ac-green, 15%);
+  transition: all 0.1s ease-in-out;
+
+  &:hover,
+  &:focus {
+    transform: translateY(2px);
+    box-shadow: 0 3px 0px 0px darken($ac-green, 15%);
+  }
+
+  &:active {
+    transform: translateY(5px);
+    box-shadow: 0 0px 0px 0px darken($ac-green, 15%);
+  }
+
+  &:disabled {
+    background-color: lighten($ac-green, 15%);
+    box-shadow: 0 5px 0px 0px lighten($ac-green, 5%);
+  }
+}
+
+// --- リンクと区切り線 ---
+.ac-link {
+  color: $ac-brown;
+  font-weight: 700;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.ac-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: lighten($ac-text, 20%);
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 2px dotted lighten($ac-text, 40%);
+  }
+  span {
+    padding: 0 1rem;
+  }
+}
+
+.ac-error-feedback {
+  color: #d9534f;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
