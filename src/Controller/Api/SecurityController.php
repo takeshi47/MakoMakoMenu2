@@ -24,4 +24,9 @@ class SecurityController extends AbstractController
     {
         return $this->json($this->getUser());
     }
+
+    #[Route('/login', methods: ['POST'])]
+    public function login(): void
+    {
+    }
 }

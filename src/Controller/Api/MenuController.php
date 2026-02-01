@@ -9,15 +9,15 @@ use App\Form\MenuType;
 use App\Repository\MenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 #[Route('/menu', name: 'menu_')]
 final class MenuController extends AbstractController
 {
+    use ApiControllerTrait;
+
     #[Route('/new', name: 'new', methods: ['POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -71,7 +71,7 @@ final class MenuController extends AbstractController
     {
         $submittedToken = $request->headers->get('X-CSRF-TOKEN');
 
-        if (!$this->isCsrfTokenValid('delete_menu'.$menu->getId(), $submittedToken)) {
+        if (!$this->isCsrfTokenValid('delete_menu_'.$menu->getId(), $submittedToken)) {
             return $this->json(['error' => 'Invalid CSRF TOKEN'], Response::HTTP_BAD_REQUEST);
         }
 
@@ -80,74 +80,4 @@ final class MenuController extends AbstractController
 
         return new Response();
     }
-
-    #[Route(path: '/csrf-token', name: 'csrf_token', methods: ['GET'])]
-    public function getCsrfToken(CsrfTokenManagerInterface $csrfTokenManager): Response
-    {
-        $token = $csrfTokenManager->getToken('menu')->getValue();
-
-        return $this->json(['token' => $token]);
-    }
-
-    #[Route(path: '/csrf-token/delete/{id}', name: 'csrf_token_delete', methods: ['GET'])]
-    public function getCsrfTokenDelete(int $id, CsrfTokenManagerInterface $csrfTokenManager): Response
-    {
-        $token = $csrfTokenManager->getToken('delete_menu'.$id)->getValue();
-
-        return $this->json(['token' => $token]);
-    }
-
-    private function getErrorsFromForm(FormInterface $form): array
-    {
-        $errors = [];
-
-        foreach ($form->getErrors() as $error) {
-            $errors[] = $error->getMessage();
-        }
-
-        foreach ($form->all() as $childForm) {
-            if ($childErrors = $this->getErrorsFromForm($childForm)) {
-                $errors[$childForm->getName()] = $childErrors;
-            }
-        }
-
-        return $errors;
-    }
-
-    // #[Route('/{id}', name: 'app_menu_show', methods: ['GET'])]
-    // public function show(Menu $menu): Response
-    // {
-    //     return $this->render('menu/show.html.twig', [
-    //         'menu' => $menu,
-    //     ]);
-    // }
-
-    // #[Route('/{id}/edit', name: 'app_menu_edit', methods: ['GET', 'POST'])]
-    // public function edit(Request $request, Menu $menu, EntityManagerInterface $entityManager): Response
-    // {
-    //     $form = $this->createForm(MenuType::class, $menu);
-    //     $form->handleRequest($request);
-
-    //     if ($form->isSubmitted() && $form->isValid()) {
-    //         $entityManager->flush();
-
-    //         return $this->redirectToRoute('app_menu_index', [], Response::HTTP_SEE_OTHER);
-    //     }
-
-    //     return $this->render('menu/edit.html.twig', [
-    //         'menu' => $menu,
-    //         'form' => $form,
-    //     ]);
-    // }
-
-    // #[Route('/{id}', name: 'app_menu_delete', methods: ['POST'])]
-    // public function delete(Request $request, Menu $menu, EntityManagerInterface $entityManager): Response
-    // {
-    //     if ($this->isCsrfTokenValid('delete'.$menu->getId(), $request->getPayload()->getString('_token'))) {
-    //         $entityManager->remove($menu);
-    //         $entityManager->flush();
-    //     }
-
-    //     return $this->redirectToRoute('app_menu_index', [], Response::HTTP_SEE_OTHER);
-    // }
 }
