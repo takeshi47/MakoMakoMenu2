@@ -3214,6 +3214,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bootstrap-icons@npm:^1.13.1":
+  version: 1.13.1
+  resolution: "bootstrap-icons@npm:1.13.1"
+  checksum: 10c0/2c1adeb1796502e67b476ce049c86bc3a7ff7984c61777e056820389a8db5ec6535c12a33f76f3ed52674bca4c01472065a7fbcde6cc384ebb86c2eae51390bd
+  languageName: node
+  linkType: hard
+
 "bootstrap@npm:^5.3.8":
   version: 5.3.8
   resolution: "bootstrap@npm:5.3.8"
@@ -4263,6 +4270,7 @@ __metadata:
     "@popperjs/core": "npm:^2.11.8"
     angular-eslint: "npm:21.1.0"
     bootstrap: "npm:^5.3.8"
+    bootstrap-icons: "npm:^1.13.1"
     eslint: "npm:^9.39.1"
     jsdom: "npm:^27.1.0"
     rxjs: "npm:~7.8.0"
