@@ -35,7 +35,7 @@ export class IngredientService {
   }
 
   fetchCsrfToken(): Observable<string> {
-    const tokenId = 'create_ingredient';
+    const tokenId = 'ingredient_create';
 
     return this.http
       .get<{ token: string }>(`${this.baseUrl}/csrf-token/${tokenId}`)
@@ -43,7 +43,7 @@ export class IngredientService {
   }
 
   fetchCsrfTokenDelete(id: number): Observable<string> {
-    const tokenId = `delete_ingredient_${id}`;
+    const tokenId = `ingredient_delete_${id}`;
 
     return this.http
       .get<{ token: string }>(`${this.baseUrl}/csrf-token/${tokenId}`)

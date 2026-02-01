@@ -23,7 +23,7 @@ class IngredientType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Ingredient::class,
-            'csrf_token_id' => 'create_ingredient',
+            'csrf_token_id' => 'ingredient_create',
         ]);
     }
 }
