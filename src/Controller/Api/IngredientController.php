@@ -71,7 +71,7 @@ final class IngredientController extends AbstractController
     {
         $submittedToken = $request->headers->get('X-CSRF-TOKEN');
 
-        if (!$this->isCsrfTokenValid('delete_ingredient'.$ingredient->getId(), $submittedToken)) {
+        if (!$this->isCsrfTokenValid('delete_ingredient_'.$ingredient->getId(), $submittedToken)) {
             return $this->json(['error' => 'Invalid CSRF TOKEN']);
         }
 
