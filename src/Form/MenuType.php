@@ -28,7 +28,7 @@ class MenuType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Menu::class,
-            'csrf_token_id' => 'menu_create'
+            'csrf_token_id' => 'menu_create',
         ]);
     }
 }
