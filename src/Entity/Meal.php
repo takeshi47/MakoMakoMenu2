@@ -23,12 +23,22 @@ class Meal
 {
     use TimestampableEntity;
 
+    public const BREAKFAST = 'breakfast';
+    public const LUNCH = 'lunch';
+    public const DINNER = 'dinner';
+
+    public const MEAL_TYPES = [
+        self::BREAKFAST,
+        self::LUNCH,
+        self::DINNER,
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 1)]
+    #[ORM\Column(length: 10)]
     private ?string $mealType = null;
 
     #[ORM\ManyToOne(inversedBy: 'meals')]
