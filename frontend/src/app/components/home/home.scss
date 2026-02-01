@@ -1,0 +1,25 @@
+.card-wrapper {
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.nav-button.prev {
+  left: -60px;
+}
+
+.nav-button.next {
+  right: -60px;
+}
+
+.new-button {
+  position: absolute;
+  top: -45px;
+  left: 0;
+}
