@@ -1,12 +1,28 @@
 <div class="container my-4">
   <div class="col-lg-8 offset-lg-2">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <h2 class="mb-4 text-center">献立作成フォーム</h2>
-
+      <h2 class="mb-4 text-center">献立登録</h2>
+      @if (errorMessages) {
+        <div class="alert alert-danger" role="alert">
+          <p class="fw-bold mb-1">以下のエラーが発生しました:</p>
+          <ul>
+            @for (error of errorMessages | keyvalue; track error) {
+              <li>{{ error.key }}: {{ error.value | json }}</li>
+            }
+          </ul>
+        </div>
+      }
       <!-- 日付入力フィールド -->
       <div class="mb-3">
         <label for="date" class="h5 form-label">日付:</label>
         <input id="date" type="date" formControlName="date" class="form-control" />
+        @if (errorMessages?.['date']) {
+          <ul>
+            @for (error of errorMessages?.['date'] | keyvalue; track error) {
+              <li>{{ error.value }}</li>
+            }
+          </ul>
+        }
       </div>
 
       <!-- 食事(meals)のFormArrayを描画するセクション -->
@@ -34,6 +50,13 @@
                 <option [value]="this.MEAL_TYPE_CHOICES[1]">昼食</option>
                 <option [value]="this.MEAL_TYPE_CHOICES[2]">夕食</option>
               </select>
+              @if (errorMessages?.['meals']?.[i]; as errorMessages) {
+                <ul>
+                  @for (error of errorMessages?.['mealType'] | keyvalue; track error) {
+                    <li>{{ error.value }}</li>
+                  }
+                </ul>
+              }
             </div>
 
             <!-- メニュー(menu)のFormArrayを描画するセクション -->
@@ -45,8 +68,8 @@
                 <div class="input-group mb-2">
                   <select [formControlName]="j" class="form-select">
                     <option [ngValue]="null" disabled>メニューを選択</option>
-                    @for (menuOption of debugMenuIds; track menuOption.id) {
-                      <option [ngValue]="menuOption.id">{{ menuOption.name }}</option>
+                    @for (menu of menus; track menu.id) {
+                      <option [ngValue]="menu.id">{{ menu.name }}</option>
                     }
                   </select>
                   <button
@@ -58,6 +81,13 @@
                     ×
                   </button>
                 </div>
+              }
+              @if (errorMessages?.['meals']?.[i]?.['menu']; as errorMessages) {
+                <ul>
+                  @for (error of errorMessages | keyvalue; track error) {
+                    <li>{{ error.value }}</li>
+                  }
+                </ul>
               }
 
               <button
@@ -72,14 +102,14 @@
         }
       </div>
 
-      <button type="button" (click)="addMeal(null)" class="btn btn-secondary d-block w-100 mb-3">
+      <button type="button" (click)="addMeal()" class="btn btn-secondary d-block w-100 mb-3">
         ＋ 食事を追加
       </button>
 
       <hr class="my-4" />
 
-      <button type="submit" [disabled]="!form.valid" class="btn btn-primary btn-lg d-block w-100">
-        登録
+      <button type="submit" class="btn btn-primary btn-lg d-block w-100">
+        登録[disabled]="!form.valid"
       </button>
     </form>
   </div>
