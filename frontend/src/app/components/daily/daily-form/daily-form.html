@@ -1,0 +1,86 @@
+<div class="container my-4">
+  <div class="col-lg-8 offset-lg-2">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <h2 class="mb-4 text-center">献立作成フォーム</h2>
+
+      <!-- 日付入力フィールド -->
+      <div class="mb-3">
+        <label for="date" class="h5 form-label">日付:</label>
+        <input id="date" type="date" formControlName="date" class="form-control" />
+      </div>
+
+      <!-- 食事(meals)のFormArrayを描画するセクション -->
+      <div formArrayName="meals">
+        <h3 class="h5">食事:</h3>
+
+        <!-- 各食事を @for でループして描画 -->
+        @for (meal of meals.controls; track meal; let i = $index) {
+          <div [formGroupName]="i" class="border rounded p-3 mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="h6 mb-0">食事 {{ i + 1 }}</h4>
+              <button
+                type="button"
+                (click)="removeMeal(i)"
+                class="btn-close"
+                aria-label="この食事を削除"
+              ></button>
+            </div>
+
+            <!-- 食事タイプ (朝食/昼食/夕食) -->
+            <div class="mb-3">
+              <label [for]="'mealType' + i" class="form-label">タイプ:</label>
+              <select [id]="'mealType' + i" formControlName="mealType" class="form-select">
+                <option [value]="this.MEAL_TYPE_CHOICES[0]">朝食</option>
+                <option [value]="this.MEAL_TYPE_CHOICES[1]">昼食</option>
+                <option [value]="this.MEAL_TYPE_CHOICES[2]">夕食</option>
+              </select>
+            </div>
+
+            <!-- メニュー(menu)のFormArrayを描画するセクション -->
+            <div formArrayName="menu">
+              <p class="form-label">メニューIDリスト:</p>
+
+              <!-- 各メニューを @for でループして描画 -->
+              @for (menu of getMenus(i).controls; track menu; let j = $index) {
+                <div class="input-group mb-2">
+                  <select [formControlName]="j" class="form-select">
+                    <option [ngValue]="null" disabled>メニューを選択</option>
+                    @for (menuOption of debugMenuIds; track menuOption.id) {
+                      <option [ngValue]="menuOption.id">{{ menuOption.name }}</option>
+                    }
+                  </select>
+                  <button
+                    type="button"
+                    (click)="removeMenu(i, j)"
+                    class="btn btn-outline-secondary"
+                    type="button"
+                  >
+                    ×
+                  </button>
+                </div>
+              }
+
+              <button
+                type="button"
+                (click)="addMenu(i)"
+                class="btn btn-sm btn-outline-primary mt-2"
+              >
+                ＋ メニューを追加
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <button type="button" (click)="addMeal(null)" class="btn btn-secondary d-block w-100 mb-3">
+        ＋ 食事を追加
+      </button>
+
+      <hr class="my-4" />
+
+      <button type="submit" [disabled]="!form.valid" class="btn btn-primary btn-lg d-block w-100">
+        登録
+      </button>
+    </form>
+  </div>
+</div>
