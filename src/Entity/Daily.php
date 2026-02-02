@@ -27,8 +27,7 @@ class Daily
     /**
      * @var Collection<int, Meal>
      */
-    #[ORM\OneToMany(targetEntity: Meal::class, mappedBy: 'daily')]
-    private Collection $meals;
+    #[ORM\OneToMany(mappedBy: 'daily', targetEntity: Meal::class, cascade: ['persist'])] private Collection $meals;
 
     public function __construct()
     {

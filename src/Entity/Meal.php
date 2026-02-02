@@ -23,11 +23,12 @@ class Meal
 {
     use TimestampableEntity;
 
+    // todo: 移設する
     public const BREAKFAST = 'breakfast';
     public const LUNCH = 'lunch';
     public const DINNER = 'dinner';
 
-    public const MEAL_TYPES = [
+    public const MEAL_TYPE_CHOICES = [
         self::BREAKFAST,
         self::LUNCH,
         self::DINNER,
