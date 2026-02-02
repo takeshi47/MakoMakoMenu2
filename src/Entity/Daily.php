@@ -10,8 +10,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DailyRepository::class)]
+#[UniqueEntity(
+    fields: ['date'],
+)]
 class Daily
 {
     use TimestampableEntity;
@@ -27,7 +32,9 @@ class Daily
     /**
      * @var Collection<int, Meal>
      */
-    #[ORM\OneToMany(mappedBy: 'daily', targetEntity: Meal::class, cascade: ['persist'])] private Collection $meals;
+    #[ORM\OneToMany(mappedBy: 'daily', targetEntity: Meal::class, cascade: ['persist'])]
+    #[Assert\Valid()]
+    private Collection $meals;
 
     public function __construct()
     {

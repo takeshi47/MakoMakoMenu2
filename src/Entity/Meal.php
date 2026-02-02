@@ -10,11 +10,16 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MealRepository::class)]
-#[UniqueConstraint(
+#[UniqueConstraint( // DBも複合ユニークキーを設定する
     name: 'uq_daily_meal_type',
     columns: ['daily_id', 'meal_type']
+)]
+#[UniqueEntity( // 複合ユニークのバリデーション
+    fields: ['daily', 'mealType'],
 )]
 class Meal
 {
@@ -37,6 +42,10 @@ class Meal
     private ?int $id = null;
 
     #[ORM\Column(length: 10)]
+    #[Assert\NotBlank()]
+    #[Assert\Choice(
+        choices: self::MEAL_TYPE_CHOICES,
+    )]
     private ?string $mealType = null;
 
     #[ORM\ManyToOne(inversedBy: 'meals')]
@@ -46,6 +55,7 @@ class Meal
      * @var Collection<int, Menu>
      */
     #[ORM\ManyToMany(targetEntity: Menu::class)]
+    #[Assert\Count(min: 1)]
     private Collection $menu;
 
     public function __construct()

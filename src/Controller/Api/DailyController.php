@@ -33,6 +33,6 @@ final class DailyController extends AbstractController
             return new Response();
         }
 
-        return $this->json($this->getErrorsFromForm($form));
+        return $this->json($this->getErrorsFromForm($form), Response::HTTP_BAD_REQUEST);
     }
 }
