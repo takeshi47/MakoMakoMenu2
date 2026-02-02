@@ -6,7 +6,6 @@ namespace App\Controller\Api;
 
 use App\Entity\Daily;
 use App\Form\DailyType;
-use App\Repository\DailyRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,32 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DailyController extends AbstractController
 {
     use ApiControllerTrait;
-    // #[Route(name: 'index', methods: ['GET'])]
-    // public function index(DailyRepository $dailyRepository): Response
-    // {
-    //     return $this->render('daily/index.html.twig', [
-    //         'dailies' => $dailyRepository->findAll(),
-    //     ]);
-    // }
 
-    // 想定されるJsonデータ
-    // {
-    //   "date": "2026-02-01",
-    //   "meals": [
-    //      {
-    //        "mealType": "B",
-    //        "menu": [1, 2]
-    //      },
-    //      {
-    //        "mealType": "L",
-    //        "menu": [3]
-    //      },
-    //      {
-    //        "mealType": "D",
-    //        "menu": [4, 5, 6]
-    //      }
-    //   ]
-    // }
     #[Route('/create', name: 'create', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): Response
     {
