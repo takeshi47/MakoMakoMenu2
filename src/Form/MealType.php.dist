@@ -1,0 +1,60 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Form;
+
+use App\Entity\Meal;
+use App\Entity\Menu;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+class MealType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('mealType', TextType::class)
+            ->add('menu', EntityType::class, [
+                'class' => Menu::class,
+                'choice_value' => 'id',
+                'multiple' => true,
+                'expanded' => false,
+            ]);
+
+        $builder->get('menu')->addEventListener(
+            FormEvents::PRE_SUBMIT,
+            [$this, 'onPreSubmitMenu'],
+            // Symfonyの内部リスナーより高い優先度を設定 (Frontendから [null] が送信された場合にエラーとなるため)
+            256
+        );
+    }
+
+    public function onPreSubmitMenu(FormEvent $event): void
+    {
+        $data = $event->getData();
+
+        // null または null を含む配列の場合、空の配列に変換する
+        if (null === $data) {
+            $event->setData([]);
+        } elseif (is_array($data)) {
+            // 配列内の null を取り除く
+            $filteredData = array_filter($data, fn ($value) => $value !== null);
+            // キーが飛び飛びにならないように、値を再インデックス化する
+            $event->setData(array_values($filteredData));
+        }
+        // 文字列などの単一の有効な値の場合は、そのまま
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => Meal::class,
+        ]);
+    }
+}

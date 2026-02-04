@@ -8,11 +8,11 @@ use App\Entity\Meal;
 use App\Entity\Menu;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class MealType extends AbstractType
 {
@@ -20,35 +20,27 @@ class MealType extends AbstractType
     {
         $builder
             ->add('mealType', TextType::class)
-            ->add('menu', EntityType::class, [
-                'class' => Menu::class,
-                'choice_value' => 'id',
-                'multiple' => true,
-                'expanded' => false,
+            ->add('menu', CollectionType::class, [
+                'entry_type' => EntityType::class,
+                'entry_options' => [
+                    'class' => Menu::class,
+                    'constraints' => [
+                        // 個々のメニューにバリデーション
+                        new Assert\NotBlank(message: 'メニューは空にできません。'),
+                    ],
+                ],
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                // 子要素のエラーをバブルさせない
+                'error_bubbling' => false,
             ]);
-
-        $builder->get('menu')->addEventListener(
-            FormEvents::PRE_SUBMIT,
-            [$this, 'onPreSubmitMenu'],
-            // Symfonyの内部リスナーより高い優先度を設定 (Frontendから [null] が送信された場合にエラーとなるため)
-            1
-        );
-    }
-
-    public function onPreSubmitMenu(FormEvent $event): void
-    {
-        $data = $event->getData();
-        // フロントエンドから [null] という値が送られてくる場合を考慮
-        if (null === $data || [null] === $data) {
-            $event->setData([]);
-        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Meal::class,
-            'csrf_protection' => false,
         ]);
     }
 }
