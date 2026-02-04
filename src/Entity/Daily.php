@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\DailyRepository;
+use App\Validator as AcmeAssert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -13,6 +14,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[AcmeAssert\UniqueMealTypePerDay]
 #[ORM\Entity(repositoryClass: DailyRepository::class)]
 #[UniqueEntity(
     fields: ['date'],
@@ -21,12 +23,16 @@ class Daily
 {
     use TimestampableEntity;
 
+    const MEALS_MIN = 1;
+    const MEALS_MAX = 3;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, unique: true)]
+    #[Assert\NotBlank()]
     private ?\DateTime $date = null;
 
     /**
@@ -34,6 +40,7 @@ class Daily
      */
     #[ORM\OneToMany(mappedBy: 'daily', targetEntity: Meal::class, cascade: ['persist'])]
     #[Assert\Valid()]
+    #[Assert\Count(min: self::MEALS_MIN, max: self::MEALS_MAX)]
     private Collection $meals;
 
     public function __construct()
@@ -51,7 +58,7 @@ class Daily
         return $this->date;
     }
 
-    public function setDate(\DateTime $date): static
+    public function setDate(?\DateTime $date): static
     {
         $this->date = $date;
 

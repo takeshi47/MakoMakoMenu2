@@ -10,16 +10,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MealRepository::class)]
 #[UniqueConstraint( // DBも複合ユニークキーを設定する
     name: 'uq_daily_meal_type',
-    columns: ['daily_id', 'meal_type']
-)]
-#[UniqueEntity( // 複合ユニークのバリデーション
-    fields: ['daily', 'mealType'],
+    columns: ['daily_id', 'meal_type'],
 )]
 class Meal
 {
@@ -42,9 +38,10 @@ class Meal
     private ?int $id = null;
 
     #[ORM\Column(length: 10)]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank(message: '食事タイプは必須です。')]
     #[Assert\Choice(
         choices: self::MEAL_TYPE_CHOICES,
+        message: '無効な食事タイプが選択されました。'
     )]
     private ?string $mealType = null;
 
@@ -55,7 +52,7 @@ class Meal
      * @var Collection<int, Menu>
      */
     #[ORM\ManyToMany(targetEntity: Menu::class)]
-    #[Assert\Count(min: 1)]
+    #[Assert\Count(min: 1, minMessage: 'メニューは最低1つ選択してください。')]
     private Collection $menu;
 
     public function __construct()
@@ -100,7 +97,7 @@ class Meal
         return $this->menu;
     }
 
-    public function addMenu(Menu $menu): static
+    public function addMenu(?Menu $menu): static
     {
         if (!$this->menu->contains($menu)) {
             $this->menu->add($menu);
