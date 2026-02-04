@@ -1,27 +1,36 @@
 <div class="container my-4">
   <div class="col-lg-8 offset-lg-2">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <h2 class="mb-4 text-center">献立登録</h2>
-      @if (errorMessages) {
-        <div class="alert alert-danger" role="alert">
-          <p class="fw-bold mb-1">以下のエラーが発生しました:</p>
-          <ul>
-            @for (error of errorMessages | keyvalue; track error) {
-              <li>{{ error.key }}: {{ error.value | json }}</li>
-            }
-          </ul>
-        </div>
-      }
+      <h2 class="mb-4 text-center">たべるもの</h2>
+
       <!-- 日付入力フィールド -->
       <div class="mb-3">
         <label for="date" class="h5 form-label">日付:</label>
-        <input id="date" type="date" formControlName="date" class="form-control" />
-        @if (errorMessages?.['date']) {
-          <ul>
-            @for (error of errorMessages?.['date'] | keyvalue; track error) {
-              <li>{{ error.value }}</li>
+        <input
+          id="date"
+          type="date"
+          formControlName="date"
+          class="form-control"
+          [ngClass]="{
+            'is-invalid':
+              errorMessages?.['date'] ||
+              (form.get('date')?.invalid && (form.get('date')?.touched || form.get('date')?.dirty)),
+          }"
+        />
+        @if (form.get('date')?.invalid && (form.get('date')?.touched || form.get('date')?.dirty)) {
+          <div class="invalid-feedback d-block">
+            <!-- d-block を追加して常に表示 -->
+            @if (form.get('date')?.hasError('required')) {
+              日付は必須です。
             }
-          </ul>
+          </div>
+        }
+        @if (errorMessages?.['date']) {
+          <div class="invalid-feedback d-block">
+            @for (error of errorMessages?.['date'] | keyvalue; track error) {
+              <span>{{ error.value }}</span>
+            }
+          </div>
         }
       </div>
 
@@ -34,28 +43,50 @@
           <div [formGroupName]="i" class="border rounded p-3 mb-3">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h4 class="h6 mb-0">食事 {{ i + 1 }}</h4>
-              <button
-                type="button"
-                (click)="removeMeal(i)"
-                class="btn-close"
-                aria-label="この食事を削除"
-              ></button>
+              @if (canRemoveMeal()) {
+                <button
+                  type="button"
+                  (click)="removeMeal(i)"
+                  class="btn-close"
+                  aria-label="この食事を削除"
+                ></button>
+              }
             </div>
 
             <!-- 食事タイプ (朝食/昼食/夕食) -->
             <div class="mb-3">
               <label [for]="'mealType' + i" class="form-label">タイプ:</label>
-              <select [id]="'mealType' + i" formControlName="mealType" class="form-select">
+              <select
+                [id]="'mealType' + i"
+                formControlName="mealType"
+                class="form-select"
+                [ngClass]="{
+                  'is-invalid':
+                    errorMessages?.['meals']?.[i]?.['mealType'] ||
+                    (meals.at(i).get('mealType')?.invalid &&
+                      (meals.at(i).get('mealType')?.touched || meals.at(i).get('mealType')?.dirty)),
+                }"
+              >
                 <option [value]="this.MEAL_TYPE_CHOICES[0]">朝食</option>
                 <option [value]="this.MEAL_TYPE_CHOICES[1]">昼食</option>
                 <option [value]="this.MEAL_TYPE_CHOICES[2]">夕食</option>
               </select>
-              @if (errorMessages?.['meals']?.[i]; as errorMessages) {
-                <ul>
-                  @for (error of errorMessages?.['mealType'] | keyvalue; track error) {
-                    <li>{{ error.value }}</li>
+              @if (
+                meals.at(i).get('mealType')?.invalid &&
+                (meals.at(i).get('mealType')?.touched || meals.at(i).get('mealType')?.dirty)
+              ) {
+                <div class="invalid-feedback d-block">
+                  @if (meals.at(i).get('mealType')?.hasError('required')) {
+                    食事タイプは必須です。
                   }
-                </ul>
+                </div>
+              }
+              @if (errorMessages?.['meals']?.[i]?.['mealType']; as errorMessages) {
+                <div class="invalid-feedback d-block">
+                  @for (error of errorMessages | keyvalue; track error) {
+                    <span>{{ error.value }}</span>
+                  }
+                </div>
               }
             </div>
 
@@ -63,31 +94,65 @@
             <div formArrayName="menu">
               <p class="form-label">メニューIDリスト:</p>
 
+              <!-- FormArray全体のエラー (Count, Backendエラーなど) -->
+              @if (getMenus(i).invalid && (getMenus(i).touched || getMenus(i).dirty)) {
+                <div class="invalid-feedback d-block mb-2">
+                  @if (getMenus(i).hasError('min')) {
+                    メニューは最低1つ選択してください。
+                  }
+                </div>
+              }
+
+              @if (errorMessages?.['meals']?.[i]?.['meals']; as errorMessages) {
+                <div class="invalid-feedback d-block mb-2">
+                  @for (error of errorMessages | keyvalue; track error) {
+                    <span>{{ error.value }}</span>
+                  }
+                </div>
+              }
+
               <!-- 各メニューを @for でループして描画 -->
               @for (menu of getMenus(i).controls; track menu; let j = $index) {
                 <div class="input-group mb-2">
-                  <select [formControlName]="j" class="form-select">
+                  <select
+                    [formControlName]="j"
+                    class="form-select"
+                    [ngClass]="{
+                      'is-invalid':
+                        errorMessages?.['meals']?.[i]?.['menu']?.[j] ||
+                        (menu.invalid && (menu.touched || menu.dirty)),
+                    }"
+                  >
                     <option [ngValue]="null" disabled>メニューを選択</option>
-                    @for (menu of menus; track menu.id) {
+                    @for (menu of menusChoices; track menu.id) {
                       <option [ngValue]="menu.id">{{ menu.name }}</option>
                     }
                   </select>
-                  <button
-                    type="button"
-                    (click)="removeMenu(i, j)"
-                    class="btn btn-outline-secondary"
-                    type="button"
-                  >
-                    ×
-                  </button>
-                </div>
-              }
-              @if (errorMessages?.['meals']?.[i]?.['menu']; as errorMessages) {
-                <ul>
-                  @for (error of errorMessages | keyvalue; track error) {
-                    <li>{{ error.value }}</li>
+                  @if (canRemoveMenu(i)) {
+                    <button
+                      type="button"
+                      (click)="removeMenu(i, j)"
+                      class="btn btn-outline-secondary"
+                      type="button"
+                    >
+                      ×
+                    </button>
                   }
-                </ul>
+                </div>
+                @if (menu.invalid && (menu.touched || menu.dirty)) {
+                  <div class="invalid-feedback d-block">
+                    @if (menu.hasError('required')) {
+                      メニューは必須です。
+                    }
+                  </div>
+                }
+                @if (errorMessages?.['meals']?.[i]?.['menu']?.[j]; as errorMessages) {
+                  <div class="invalid-feedback d-block">
+                    @for (error of errorMessages | keyvalue; track error) {
+                      <span>{{ error.value }}</span>
+                    }
+                  </div>
+                }
               }
 
               <button
@@ -102,14 +167,14 @@
         }
       </div>
 
-      <button type="button" (click)="addMeal()" class="btn btn-secondary d-block w-100 mb-3">
+      <button type="button" (click)="addMeal()" class="btn btn-secondary d-block w-100">
         ＋ 食事を追加
       </button>
 
       <hr class="my-4" />
 
-      <button type="submit" class="btn btn-primary btn-lg d-block w-100">
-        登録[disabled]="!form.valid"
+      <button type="submit" [disabled]="!form.valid" class="btn btn-primary btn-lg d-block w-100">
+        登録
       </button>
     </form>
   </div>

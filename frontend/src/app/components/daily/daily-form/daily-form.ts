@@ -32,7 +32,7 @@ export class DailyFormComponent implements OnInit {
 
   private baseDate = new Date().toISOString().substring(0, 10);
   private csrfToken: string | null = null;
-  protected menus: Menu[] | null = null;
+  protected menusChoices: Menu[] | null = null;
   protected errorMessages: BackendFormErrors | null = null;
 
   // フォーム全体を管理するFormGroup
@@ -42,14 +42,19 @@ export class DailyFormComponent implements OnInit {
   readonly LUNCH = 'lunch';
   readonly DINNER = 'dinner';
 
-  // todo:
+  // todo: バックエンドから取得するように修正
   readonly MEAL_TYPE_CHOICES = [this.BREAKFAST, this.LUNCH, this.DINNER];
+
+  // todo: バックエンドから取得するように修正
+  readonly MEALS_MAX = 3;
+  readonly MEALS_MIN = 1;
+  readonly MENUS_MIN = 1;
 
   ngOnInit(): void {
     this.initForm();
 
     this.menuService.fetchAll().subscribe((menus) => {
-      this.menus = menus;
+      this.menusChoices = menus;
       this.cdr.markForCheck();
     });
 
@@ -63,8 +68,6 @@ export class DailyFormComponent implements OnInit {
     this.errorMessages = null;
 
     // if (this.form.invalid) {
-    //   console.error('Form is invalid');
-
     //   alert('フォーム入力に誤りがあります。');
     //   return;
     // }
@@ -74,37 +77,18 @@ export class DailyFormComponent implements OnInit {
       _token: this.csrfToken,
     };
 
-    console.log(payload);
-
-
     // ここで、整形したデータをService経由でバックエンドAPIにPOSTします
     this.dailyService.create(payload).subscribe({
-      next: (res) => {
-        console.log(res);
-
-        this.router.navigate(['/home']);
+      next: () => {
+        if (confirm('registration completed!')) this.router.navigate(['/home']);
       },
       error: (error) => {
-        console.log(error.error);
-
         if (error?.error) {
           this.errorMessages = error.error;
-          console.log(this.errorMessages);
           this.cdr.markForCheck();
-
-        }
-
-        if (error.error.date && confirm('既に登録されてるけど、更新してよい？')) {
-          this.update();
         }
       },
     });
-  }
-
-  // @todo:
-  update(): void {
-    console.log(this.form.getRawValue());
-    alert('フォームの生データ:\n' + JSON.stringify(this.form.getRawValue(), null, 2));
   }
 
   private initForm(): void {
@@ -118,6 +102,22 @@ export class DailyFormComponent implements OnInit {
 
     // 初期状態で「朝食」の入力欄を一つ追加しておく
     this.addMeal(this.BREAKFAST);
+  }
+
+  protected canAddMeal(): boolean {
+    return this.meals.length < this.MEALS_MAX;
+  }
+
+  protected canRemoveMeal(): boolean {
+    return this.meals.length > this.MEALS_MIN;
+  }
+
+  // protected canAddMenu(): boolean {
+  //   return true;
+  // }
+
+  protected canRemoveMenu(mealIndex: number): boolean {
+    return this.getMenus(mealIndex).length > this.MENUS_MIN;
   }
 
   /**
@@ -153,6 +153,10 @@ export class DailyFormComponent implements OnInit {
    * @param mealType 食事タイプ
    */
   addMeal(mealType: string | null = null): void {
+    if (!this.canAddMeal()) {
+      return;
+    }
+
     this.meals.push(this.newMeal(mealType));
   }
 
@@ -161,6 +165,10 @@ export class DailyFormComponent implements OnInit {
    * @param mealIndex 削除する食事のインデックス
    */
   removeMeal(mealIndex: number): void {
+    if (!this.canRemoveMeal()) {
+      return;
+    }
+
     this.meals.removeAt(mealIndex);
   }
 
@@ -183,6 +191,10 @@ export class DailyFormComponent implements OnInit {
    * @param menuIndex 削除するメニューのインデックス
    */
   removeMenu(mealIndex: number, menuIndex: number): void {
+    if (!this.canRemoveMenu(mealIndex)) {
+      return;
+    }
+
     this.getMenus(mealIndex).removeAt(menuIndex);
   }
 }
