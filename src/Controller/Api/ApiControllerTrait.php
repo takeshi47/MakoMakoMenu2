@@ -30,7 +30,12 @@ trait ApiControllerTrait
 
         // 1. 現在のフォーム/フィールド自身に紐づくグローバルなエラーを取得
         foreach ($form->getErrors() as $error) {
-            $errors[] = $error->getMessage(); // エラーメッセージを配列に追加
+            if ($error->getOrigin()->getParent() === null) {
+                $path = str_replace(['data', '.'], '', $error->getCause()->getPropertyPath());
+                $errors[$path][] = $error->getMessage(); // エラーメッセージを配列に追加
+            } else {
+                $errors[] = $error->getMessage(); // エラーメッセージを配列に追加
+            }
         }
 
         // 2. 各子フィールドのエラーを再帰的に取得
