@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use App\Criteria\DailyFetchCriteria;
 use App\Entity\Daily;
+use App\Form\DailyFetchType;
 use App\Form\DailyType;
+use App\UseCase\DailyFetchUseCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,6 +19,24 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DailyController extends AbstractController
 {
     use ApiControllerTrait;
+
+    #[Route(name: 'fetch', methods: ['POST'])]
+    public function fetch(Request $request, DailyFetchUseCase $dailyFetchUseCase): Response
+    {
+        $dailyFetchCriteria = new DailyFetchCriteria();
+        $form = $this->createForm(DailyFetchType::class, $dailyFetchCriteria);
+
+        $data = json_decode($request->getContent(), true);
+        $form->submit($data);
+
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            return $this->json($this->getErrorsFromForm($form), Response::HTTP_BAD_REQUEST);
+        }
+
+        $result = $dailyFetchUseCase->fetchDailyMeals($dailyFetchCriteria);
+
+        return $this->json($result);
+    }
 
     #[Route('/create', name: 'create', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): Response

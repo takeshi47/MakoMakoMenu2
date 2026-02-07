@@ -18,6 +18,19 @@ class DailyRepository extends ServiceEntityRepository
         parent::__construct($registry, Daily::class);
     }
 
+    public function findByDateList(array $targetDateList): array
+    {
+        if ($targetDateList === []) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('d')
+            // ->where('d.date = :dateList')
+            ->where('d.date IN (:dateList)')
+            ->setParameter('dateList', $targetDateList)
+            ->getQuery()
+            ->getResult();
+    }
     //    /**
     //     * @return Daily[] Returns an array of Daily objects
     //     */

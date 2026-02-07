@@ -23,8 +23,8 @@ class Daily
 {
     use TimestampableEntity;
 
-    const MEALS_MIN = 1;
-    const MEALS_MAX = 3;
+    public const MEALS_MIN = 1;
+    public const MEALS_MAX = 3;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -93,5 +93,13 @@ class Daily
         }
 
         return $this;
+    }
+
+    public static function createEmpty(string $date): self
+    {
+        $daily = new self();
+        $daily->date = new \DateTime($date);
+
+        return $daily;
     }
 }

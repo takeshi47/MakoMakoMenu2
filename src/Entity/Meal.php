@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MealRepository::class)]
@@ -46,6 +47,7 @@ class Meal
     private ?string $mealType = null;
 
     #[ORM\ManyToOne(inversedBy: 'meals')]
+    #[Ignore]
     private ?Daily $daily = null;
 
     /**
