@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 import { DailyService } from '../../../services/daily-service';
 import { MenuService } from '../../../services/menu-service';
 import { Menu } from '../../../models/menu';
-import { Router } from '@angular/router';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal';
 
 export interface BackendFormErrors {
   [key: string]: BackendFormErrors;
@@ -28,7 +28,7 @@ export class DailyFormComponent implements OnInit {
   private dailyService = inject(DailyService);
   private menuService = inject(MenuService);
   private cdr = inject(ChangeDetectorRef);
-  private router = inject(Router);
+  activeModal = inject(NgbActiveModal);
 
   private baseDate = new Date().toISOString().substring(0, 10);
   private csrfToken: string | null = null;
@@ -67,10 +67,10 @@ export class DailyFormComponent implements OnInit {
   onSubmit(): void {
     this.errorMessages = null;
 
-    // if (this.form.invalid) {
-    //   alert('フォーム入力に誤りがあります。');
-    //   return;
-    // }
+    if (this.form.invalid) {
+      alert('フォーム入力に誤りがあります。');
+      return;
+    }
 
     const payload = {
       ...this.form.getRawValue(),
@@ -80,7 +80,7 @@ export class DailyFormComponent implements OnInit {
     // ここで、整形したデータをService経由でバックエンドAPIにPOSTします
     this.dailyService.create(payload).subscribe({
       next: () => {
-        if (confirm('registration completed!')) this.router.navigate(['/home']);
+        if (confirm('registration completed!')) this.close();
       },
       error: (error) => {
         if (error?.error) {
@@ -102,6 +102,14 @@ export class DailyFormComponent implements OnInit {
 
     // 初期状態で「朝食」の入力欄を一つ追加しておく
     this.addMeal(this.BREAKFAST);
+  }
+
+  protected close(): void {
+    this.activeModal.close('close');
+  }
+
+  protected dismiss(): void {
+    this.activeModal.dismiss('dismiss');
   }
 
   protected canAddMeal(): boolean {

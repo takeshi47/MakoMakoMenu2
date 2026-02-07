@@ -3,6 +3,8 @@ import { RouterModule } from '@angular/router';
 import { DailyService } from '../../services/daily-service';
 import { Daily } from '../../models/daily';
 import { CommonModule } from '@angular/common';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
+import { DailyFormComponent } from '../daily/daily-form/daily-form';
 
 @Component({
   selector: 'app-home',
@@ -15,6 +17,8 @@ export class Home implements OnInit {
   protected baseDate = new Date();
   private cdr = inject(ChangeDetectorRef);
   protected dailyMeals: Daily[] = [];
+
+  private modalService = inject(NgbModal);
 
   private viewMode = ['day', 'week', 'month'];
   private selectedViewMode = this.viewMode[1];
@@ -53,5 +57,16 @@ export class Home implements OnInit {
       this.dailyMeals = res;
       this.cdr.markForCheck();
     });
+  }
+
+  openNewDailyMeals(): void {
+    this.modalService.open(DailyFormComponent, { ariaLabelledBy: 'modal-basic-title', size: 'lg' }).result.then(
+      (result) => {
+        console.log(result);
+      },
+      (reason) => {
+        console.log(reason);
+      },
+    );
   }
 }
