@@ -21,4 +21,8 @@ export class DailyService {
       .get<{ token: string }>(`${this.baseUrl}/csrf-token/${tokenId}`)
       .pipe(map((csrfToken) => csrfToken.token));
   }
+
+  fetch(baseDate: string, viewMode: string): Observable<Daily[]> {
+    return this.http.post<Daily[]>(`${this.baseUrl}`, { baseDate, viewMode });
+  }
 }

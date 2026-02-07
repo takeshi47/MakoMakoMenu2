@@ -1,29 +1,92 @@
-<div class="bg-light">
+<div class="bg-light min-vh-100">
   <!-- Header -->
-  <nav class="navbar navbar-light nav-white shadow-sm px-3">
-    <span class="navbar-brand mb-0 h1">Header</span>
-    <button class="btn btn-outline-secondary rounded-circle">👤</button>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-3">
+    <div class="container-fluid">
+      <a class="navbar-brand mb-0 h1" routerLink="/">Header</a>
+      <button class="btn btn-outline-secondary rounded-circle ms-auto" routerLink="/user/profile">
+        <i class="bi bi-person-fill"></i>
+      </button>
+    </div>
   </nav>
 
-  <div class="container py-5">
-    <div class="card-wrapper">
-      <button class="btn btn-primary btn-sm new-button">new</button>
+  <div class="container-fluid py-3">
+    <!-- ボタン配置用 -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <a routerLink="/daily" class="btn btn-link text-decoration-none">献立フォーム</a>
 
-      <button class="btn btn-outline secondary nav-button prev">◀</button>
-      <button class="btn btn-outline secondary nav-button next">▶</button>
-      <!-- Card -->
-      <div class="card shadow-sm">
-        <div class="card-header text-center fw-bold">2026-01-31</div>
-        <div class="card-body text-center" style="min-height: 300px">
-          <h4 class="text-muted">card</h4>
-        </div>
+      <div>
+        <!-- ナビゲーションボタンをグループ化 -->
+        <button class="btn btn-outline-secondary me-2" (click)="prev()">
+          <i class="bi bi-arrow-left"></i>
+        </button>
+        <button class="btn btn-outline-secondary" (click)="next()">
+          <i class="bi bi-arrow-right"></i>
+        </button>
       </div>
+    </div>
+    <div class="d-flex flex-nowrap overflow-auto-x pb-3 gap-3">
+      @for (dailyMeal of dailyMeals; track $index) {
+        <div class="flex-shrink-0" style="width: 13%">
+          <div class="card h-100 shadow">
+            <div class="card-header text-center fw-bold">
+              {{ dailyMeal.date | date: 'yyyy-MM-dd' }}
+            </div>
+
+            <div class="card-body">
+              @if (dailyMeal.meals && dailyMeal.meals.length > 0) {
+                @for (meal of dailyMeal.meals; track $index) {
+                  @if ($index !== 0) {
+                    <hr />
+                  }
+                  <div class="mb-4">
+                    <h5 class="fw-semibold mb-2">
+                      {{ meal.mealType }}
+                    </h5>
+
+                    <ul class="list-unstyled mb-0">
+                      @for (menu of meal.menu; track $index) {
+                        <li>
+                          {{ menu.name }}
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                }
+              } @else {
+                <!-- 未登録の場合の表示 -->
+                <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                  <p class="text-muted mb-3">未登録だってばよ</p>
+                  <button class="btn btn-sm btn-outline-primary" [routerLink]="['/daily/create']">
+                    <i class="bi bi-plus-circle me-1"></i> todo: 登録する
+                  </button>
+                </div>
+              }
+            </div>
+            <div class="card-footer text-end">
+              @if (dailyMeal.id) {
+                <a
+                  [routerLink]="['/daily/edit', dailyMeal.id]"
+                  class="btn btn-sm btn-outline-primary"
+                  >編集</a
+                >
+              } @else {
+                <!-- 未登録の場合は編集ボタンは不要 -->
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- 下部のリンク群 -->
+  <div class="container py-4">
+    <hr />
+    <div class="d-flex justify-content-around">
+      <a routerLink="/user/list" class="btn btn-link text-decoration-none">ユーザーリスト</a>
+      <a routerLink="/ingredient/list" class="btn btn-link text-decoration-none">材料フォーム</a>
+      <a routerLink="/menu/list" class="btn btn-link text-decoration-none">メニューフォーム</a>
+      <a routerLink="/daily" class="btn btn-link text-decoration-none">献立フォーム</a>
     </div>
   </div>
 </div>
-
-<p>home works!</p>
-<p><a routerLink="/user/list">View User List</a></p>
-<p><a routerLink="/ingredient/list">ingredient form</a></p>
-<p><a routerLink="/menu/list">menu form</a></p>
-<p><a routerLink="/daily">daily form</a></p>
