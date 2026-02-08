@@ -26,6 +26,7 @@ export interface BackendFormErrors {
 })
 export class DailyFormComponent implements OnInit {
   @Input() daily: Daily | null = null;
+  @Input() baseDate!: string;
 
   private fb = inject(FormBuilder);
   private dailyService = inject(DailyService);
@@ -33,7 +34,6 @@ export class DailyFormComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   activeModal = inject(NgbActiveModal);
 
-  private baseDate = new Date().toISOString().substring(0, 10);
   private csrfToken: string | null = null;
   protected menusChoices: Menu[] | null = null;
   protected errorMessages: BackendFormErrors | null = null;
@@ -53,11 +53,7 @@ export class DailyFormComponent implements OnInit {
   readonly MEALS_MIN = 1;
   readonly MENUS_MIN = 1;
 
-  async ngOnInit(): Promise<void> {
-    if (this.daily?.id) {
-      // await this.fetchDaily();
-    }
-
+  ngOnInit(): void {
     this.initForm();
 
     this.menuService.fetchAll().subscribe((menus) => {
@@ -136,11 +132,10 @@ export class DailyFormComponent implements OnInit {
     // フォームの構造を初期化
     this.form = this.fb.group({
       // 日付フィールド。必須入力とし、初期値に今日の日付を設定
-      date: [this.daily ? this.daily.date : this.baseDate, Validators.required],
+      date: [this.daily?.date.substring(0, 10) ?? this.baseDate, Validators.required],
       // 食事の配列を管理するFormArray
       meals: this.fb.array([]),
     });
-    console.log(this.daily);
 
     if (this.daily?.meals && this.daily.meals.length > 0) {
       // dailyId が存在し、データが取得できた場合
