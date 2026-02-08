@@ -56,4 +56,22 @@ final class DailyController extends AbstractController
 
         return $this->json($this->getErrorsFromForm($form), Response::HTTP_BAD_REQUEST);
     }
+
+    #[Route('/update/{id}', name: 'update', methods: ['POST'])]
+    public function update(Request $request, Daily $daily, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(DailyType::class, $daily);
+        $data = json_decode($request->getContent(), true);
+
+        $form->submit($data);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($daily);
+            $entityManager->flush();
+
+            return new Response();
+        }
+
+        return $this->json($this->getErrorsFromForm($form), Response::HTTP_BAD_REQUEST);
+    }
 }
