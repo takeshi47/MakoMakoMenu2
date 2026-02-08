@@ -24,8 +24,10 @@ export class Home implements OnInit {
   private selectedViewMode = this.viewMode[1];
 
   ngOnInit(): void {
-    console.log(11);
+    this.load();
+  }
 
+  private load(): void {
     const strDate = this.baseDate.toISOString().substring(0, 10);
     this.dailyService.fetch(strDate, this.selectedViewMode).subscribe((res) => {
       this.dailyMeals = res;
@@ -34,10 +36,6 @@ export class Home implements OnInit {
   }
 
   next(): void {
-    // todo: kokokara
-    console.log('next');
-    console.log(this.baseDate);
-
     this.baseDate.setDate(this.baseDate.getDate() + 1);
     const strDate = this.baseDate.toISOString().substring(0, 10);
     this.dailyService.fetch(strDate, this.selectedViewMode).subscribe((res) => {
@@ -60,13 +58,32 @@ export class Home implements OnInit {
   }
 
   openNewDailyMeals(): void {
-    this.modalService.open(DailyFormComponent, { ariaLabelledBy: 'modal-basic-title', size: 'lg' }).result.then(
+    this.modalService
+      .open(DailyFormComponent, { ariaLabelledBy: 'modal-basic-title', size: 'lg' })
+      .result.then(
+        (result) => {
+          console.log(result);
+          this.load();
+        },
+        (reason) => {
+          console.log(reason);
+        },
+      );
+  }
+
+  openEditDailyMeals(daily: Daily): void {
+    const modalRef = this.modalService.open(DailyFormComponent, {
+      ariaLabelledBy: 'modal-basic-title',
+      size: 'lg',
+    });
+    modalRef.componentInstance.daily = daily;
+
+    modalRef.result.then(
       (result) => {
         console.log(result);
+        this.load();
       },
-      (reason) => {
-        console.log(reason);
-      },
+      (reason) => console.log(reason),
     );
   }
 }

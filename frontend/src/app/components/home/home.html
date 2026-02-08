@@ -26,9 +26,9 @@
         </button>
       </div>
     </div>
-    <div class="d-flex flex-nowrap overflow-auto-x pb-3 gap-3">
+    <div class="d-flex flex-nowrap overflow-auto-x pb-3 gap-1">
       @for (dailyMeal of dailyMeals; track $index) {
-        <div class="flex-shrink-0" style="width: 13%">
+        <div class="flex-shrink-0" style="width: 14%">
           <div class="card h-100 shadow">
             <div class="card-header text-center fw-bold">
               {{ dailyMeal.date | date: 'yyyy-MM-dd' }}
