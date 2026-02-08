@@ -58,7 +58,7 @@
           <!-- 食事タイプ (朝食/昼食/夕食) -->
           <div class="mb-3">
             <label [for]="'mealType' + i" class="form-label">タイプ:</label>
-            <select
+            <select ngbAutofocus
               [id]="'mealType' + i"
               formControlName="mealType"
               class="form-select"

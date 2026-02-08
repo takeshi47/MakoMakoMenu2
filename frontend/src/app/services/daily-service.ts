@@ -14,6 +14,10 @@ export class DailyService {
     return this.http.post<void>(`${this.baseUrl}/create`, data);
   }
 
+  update(dailyId: number, data: Partial<Daily> & { _token: string }): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/update/${dailyId}`, data);
+  }
+
   fetchCsrfToken(): Observable<string> {
     const tokenId = 'daily_create';
 
@@ -24,5 +28,9 @@ export class DailyService {
 
   fetch(baseDate: string, viewMode: string): Observable<Daily[]> {
     return this.http.post<Daily[]>(`${this.baseUrl}`, { baseDate, viewMode });
+  }
+
+  fetchById(dailyId: number): Observable<Daily> {
+    return this.http.get<Daily>(`${this.baseUrl}/${dailyId}`);
   }
 }

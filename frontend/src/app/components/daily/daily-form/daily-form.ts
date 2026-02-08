@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -12,6 +12,7 @@ import { DailyService } from '../../../services/daily-service';
 import { MenuService } from '../../../services/menu-service';
 import { Menu } from '../../../models/menu';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal';
+import { Daily } from '../../../models/daily';
 
 export interface BackendFormErrors {
   [key: string]: BackendFormErrors;
@@ -24,6 +25,8 @@ export interface BackendFormErrors {
   styleUrls: ['./daily-form.scss'],
 })
 export class DailyFormComponent implements OnInit {
+  @Input() daily: Daily | null = null;
+
   private fb = inject(FormBuilder);
   private dailyService = inject(DailyService);
   private menuService = inject(MenuService);
@@ -50,7 +53,11 @@ export class DailyFormComponent implements OnInit {
   readonly MEALS_MIN = 1;
   readonly MENUS_MIN = 1;
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    if (this.daily?.id) {
+      // await this.fetchDaily();
+    }
+
     this.initForm();
 
     this.menuService.fetchAll().subscribe((menus) => {
@@ -72,6 +79,14 @@ export class DailyFormComponent implements OnInit {
       return;
     }
 
+    if (this.daily?.id) {
+      this.update();
+    } else {
+      this.create();
+    }
+  }
+
+  private create(): void {
     const payload = {
       ...this.form.getRawValue(),
       _token: this.csrfToken,
@@ -91,17 +106,73 @@ export class DailyFormComponent implements OnInit {
     });
   }
 
+  private update(): void {
+    console.log('update');
+
+    if (!this.daily?.id) {
+      return;
+    }
+
+    const payload = {
+      ...this.form.getRawValue(),
+      _token: this.csrfToken,
+    };
+
+    // ここで、整形したデータをService経由でバックエンドAPIにPOSTします
+    this.dailyService.update(this.daily?.id, payload).subscribe({
+      next: () => {
+        if (confirm('registration completed!')) this.close();
+      },
+      error: (error) => {
+        if (error?.error) {
+          this.errorMessages = error.error;
+          this.cdr.markForCheck();
+        }
+      },
+    });
+  }
+
   private initForm(): void {
     // フォームの構造を初期化
     this.form = this.fb.group({
       // 日付フィールド。必須入力とし、初期値に今日の日付を設定
-      date: [this.baseDate, Validators.required],
+      date: [this.daily ? this.daily.date : this.baseDate, Validators.required],
       // 食事の配列を管理するFormArray
       meals: this.fb.array([]),
     });
+    console.log(this.daily);
 
-    // 初期状態で「朝食」の入力欄を一つ追加しておく
-    this.addMeal(this.BREAKFAST);
+    if (this.daily?.meals && this.daily.meals.length > 0) {
+      // dailyId が存在し、データが取得できた場合
+
+      this.daily.meals.forEach((meal) => {
+        const mealFormGroup = this.newMeal(meal.mealType);
+        const mealFormArray = mealFormGroup.get('menu') as FormArray;
+
+        // 既存のメニュー項目をクリア
+        while (mealFormArray.length !== 0) {
+          mealFormArray.removeAt(0);
+        }
+
+        meal.menu.forEach((menu) => {
+          const menuForm = this.menuForm(menu.id);
+          mealFormArray.push(menuForm);
+        });
+
+        this.meals.push(mealFormGroup);
+      });
+    } else {
+      // dailyId が存在しない、またはデータが取得できなかった場合
+      // 初期状態で「朝食」の入力欄を一つ追加しておく
+      this.addMeal(this.BREAKFAST);
+    }
+  }
+
+  private async fetchDaily(): Promise<void> {
+    // if (!this.dailyId) {
+    //   return;
+    // }
+    // this.daily = await firstValueFrom(this.dailyService.fetchById(this.dailyId));
   }
 
   protected close(): void {
@@ -189,8 +260,8 @@ export class DailyFormComponent implements OnInit {
     this.getMenus(mealIndex).push(this.menuForm());
   }
 
-  menuForm(): FormControl {
-    return this.fb.control(null, Validators.required);
+  menuForm(menuId: number | null = null): FormControl {
+    return this.fb.control(menuId, Validators.required);
   }
 
   /**
