@@ -13,7 +13,7 @@
     <!-- ボタン配置用 -->
     <div class="d-flex justify-content-between align-items-center mb-3">
       <button class="btn btn-lg btn-outline-primary" (click)="openNewDailyMeals()">
-        Launch demo modal
+        登録
       </button>
 
       <div>
@@ -58,21 +58,24 @@
                 <!-- 未登録の場合の表示 -->
                 <div class="d-flex flex-column align-items-center justify-content-center h-100">
                   <p class="text-muted mb-3">未登録だってばよ</p>
-                  <button class="btn btn-sm btn-outline-primary" [routerLink]="['/daily/create']">
-                    <i class="bi bi-plus-circle me-1"></i> todo: 登録する
-                  </button>
                 </div>
               }
             </div>
             <div class="card-footer text-end">
               @if (dailyMeal.id) {
-                <a
-                  [routerLink]="['/daily/edit', dailyMeal.id]"
+                <button
                   class="btn btn-sm btn-outline-primary"
-                  >編集</a
+                  (click)="openEditDailyMeals(dailyMeal)"
                 >
+                  編集
+                </button>
               } @else {
-                <!-- 未登録の場合は編集ボタンは不要 -->
+                <button
+                  class="btn btn-sm btn-outline-primary"
+                  (click)="openNewDailyMeals(dailyMeal?.date)"
+                >
+                  登録
+                </button>
               }
             </div>
           </div>

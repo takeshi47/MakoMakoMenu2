@@ -57,18 +57,25 @@ export class Home implements OnInit {
     });
   }
 
-  openNewDailyMeals(): void {
-    this.modalService
-      .open(DailyFormComponent, { ariaLabelledBy: 'modal-basic-title', size: 'lg' })
-      .result.then(
-        (result) => {
-          console.log(result);
-          this.load();
-        },
-        (reason) => {
-          console.log(reason);
-        },
-      );
+  openNewDailyMeals(date: string | null = null): void {
+    const modalRef = this.modalService.open(DailyFormComponent, {
+      ariaLabelledBy: 'modal-basic-title',
+      size: 'lg',
+    });
+
+    if (date) {
+      modalRef.componentInstance.baseDate = date.substring(0, 10);
+    } else {
+      modalRef.componentInstance.baseDate = new Date().toISOString().substring(0, 10);
+    }
+
+    modalRef.result.then(
+      (result) => {
+        console.log(result);
+        this.load();
+      },
+      (reason) => console.log(reason),
+    );
   }
 
   openEditDailyMeals(daily: Daily): void {
