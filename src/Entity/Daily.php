@@ -38,7 +38,8 @@ class Daily
     /**
      * @var Collection<int, Meal>
      */
-    #[ORM\OneToMany(mappedBy: 'daily', targetEntity: Meal::class, cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'daily', targetEntity: Meal::class, cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OrderBy(['sortOrder' => 'ASC'])]
     #[Assert\Valid()]
     #[Assert\Count(min: self::MEALS_MIN, max: self::MEALS_MAX)]
     private Collection $meals;

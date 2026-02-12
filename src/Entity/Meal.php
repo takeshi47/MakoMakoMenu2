@@ -57,6 +57,9 @@ class Meal
     #[Assert\Count(min: 1, minMessage: 'メニューは最低1つ選択してください。')]
     private Collection $menu;
 
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private int $sortOrder = 0;
+
     public function __construct()
     {
         $this->menu = new ArrayCollection();
@@ -113,5 +116,15 @@ class Meal
         $this->menu->removeElement($menu);
 
         return $this;
+    }
+
+    public function getSortOrder(): int
+    {
+        return $this->sortOrder;
+    }
+
+    public function setSortOrder(int $sortOrder): void
+    {
+        $this->sortOrder = $sortOrder;
     }
 }
