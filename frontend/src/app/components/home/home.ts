@@ -5,6 +5,13 @@ import { Daily } from '../../models/daily';
 import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
 import { DailyFormComponent } from '../daily/daily-form/daily-form';
+import { DateUtil } from '../../services/utils/date-util';
+
+export const enum ViewMode {
+  Day = 'day',
+  Week = 'week',
+  Month = 'month',
+}
 
 @Component({
   selector: 'app-home',
@@ -20,8 +27,7 @@ export class Home implements OnInit {
 
   private modalService = inject(NgbModal);
 
-  private viewMode = ['day', 'week', 'month'];
-  private selectedViewMode = this.viewMode[1];
+  private selectedViewMode: ViewMode = ViewMode.Week;
 
   ngOnInit(): void {
     this.load();
@@ -36,54 +42,61 @@ export class Home implements OnInit {
   }
 
   next(): void {
-    this.baseDate.setDate(this.baseDate.getDate() + 1);
-    const strDate = this.baseDate.toISOString().substring(0, 10);
-    this.dailyService.fetch(strDate, this.selectedViewMode).subscribe((res) => {
-      this.dailyMeals = res;
-      this.cdr.markForCheck();
-    });
+    console.log('next');
+
+    this._navigateDate(1);
   }
 
   prev(): void {
-    // todo: kokokara
-    console.log('prev');
-    console.log(this.baseDate);
-
-    this.baseDate.setDate(this.baseDate.getDate() - 1);
-    const strDate = this.baseDate.toISOString().substring(0, 10);
-    this.dailyService.fetch(strDate, this.selectedViewMode).subscribe((res) => {
-      this.dailyMeals = res;
-      this.cdr.markForCheck();
-    });
+    this._navigateDate(-1);
   }
 
-  openNewDailyMeals(date: string | null = null): void {
-    const modalRef = this.modalService.open(DailyFormComponent, {
-      ariaLabelledBy: 'modal-basic-title',
-      size: 'lg',
-    });
+  private _navigateDate(direction: 1 | -1): void {
+    let step = 1;
 
-    if (date) {
-      modalRef.componentInstance.baseDate = date.substring(0, 10);
-    } else {
-      modalRef.componentInstance.baseDate = new Date().toISOString().substring(0, 10);
+    switch (this.selectedViewMode) {
+      case ViewMode.Day:
+        step = 1;
+        break;
+      case ViewMode.Week:
+        step = 7;
+        break;
+      case ViewMode.Month:
+        step = 30;
+        break;
     }
 
-    modalRef.result.then(
-      (result) => {
-        console.log(result);
-        this.load();
-      },
-      (reason) => console.log(reason),
-    );
+    console.log(this.baseDate, step * direction);
+    this.baseDate = DateUtil.addDays(this.baseDate, step * direction);
+
+    console.log(this.baseDate);
+
+    this.load();
+  }
+
+  openNewDailyMeals(date?: string): void {
+    const dateToPass = date
+      ? DateUtil.getFormattedDate(new Date(date))
+      : DateUtil.getFormattedDate(new Date());
+
+    this._openDailyFormModal(null, dateToPass);
   }
 
   openEditDailyMeals(daily: Daily): void {
+    this._openDailyFormModal(daily);
+  }
+
+  private _openDailyFormModal(daily: Daily | null, dateStr?: string): void {
     const modalRef = this.modalService.open(DailyFormComponent, {
       ariaLabelledBy: 'modal-basic-title',
       size: 'lg',
     });
-    modalRef.componentInstance.daily = daily;
+
+    if (daily) {
+      modalRef.componentInstance.daily = daily;
+    } else {
+      modalRef.componentInstance.baseDate = dateStr;
+    }
 
     modalRef.result.then(
       (result) => {
