@@ -19,13 +19,10 @@ export class UserDetail implements OnInit {
   user$!: Observable<User>;
 
   ngOnInit(): void {
-    console.log(99);
-
     this.activatedRouter.paramMap
       .pipe(
         switchMap((params) => {
           const id = Number(params.get('id'));
-          console.log(id);
 
           this.user$ = this.userService.getUser(id);
 
@@ -33,8 +30,6 @@ export class UserDetail implements OnInit {
         }),
       )
       .subscribe((user) => {
-        console.log(user);
-
         if (!user.id) {
           return;
         }

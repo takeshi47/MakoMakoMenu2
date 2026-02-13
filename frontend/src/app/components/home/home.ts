@@ -32,8 +32,6 @@ export class Home implements OnInit {
   selectedViewMode: ViewMode = ViewMode.Week;
 
   ngOnInit(): void {
-    console.log(this.selectedViewMode);
-
     this.load();
   }
 
@@ -50,8 +48,6 @@ export class Home implements OnInit {
   }
 
   next(): void {
-    console.log('next');
-
     this._navigateDate(1);
   }
 
@@ -74,10 +70,7 @@ export class Home implements OnInit {
         break;
     }
 
-    console.log(this.baseDate, step * direction);
     this.baseDate = DateUtil.addDays(this.baseDate, step * direction);
-
-    console.log(this.baseDate);
 
     this.load();
   }
@@ -106,12 +99,8 @@ export class Home implements OnInit {
       modalRef.componentInstance.baseDate = dateStr;
     }
 
-    modalRef.result.then(
-      (result) => {
-        console.log(result);
-        this.load();
-      },
-      (reason) => console.log(reason),
-    );
+    modalRef.result.then(() => {
+      this.load();
+    });
   }
 }

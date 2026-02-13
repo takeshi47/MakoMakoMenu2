@@ -76,9 +76,7 @@ export class MenuForm implements OnInit {
 
     requestOption.subscribe({
       error: (error) => {
-        console.log(error);
         this.errorMessages = error.error;
-        console.log(this.errorMessages);
         this.cdr.markForCheck();
       },
     });

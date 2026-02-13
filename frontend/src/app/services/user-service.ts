@@ -16,8 +16,6 @@ export class UserService {
   }
 
   getUser(userId: number): Observable<User> {
-    console.log(1);
-
     return this.http.get<User>(`${this.baseUrl}/${userId}`);
   }
 
@@ -33,8 +31,6 @@ export class UserService {
   }
 
   delete(id: number, token: string): Observable<void> {
-    console.log(id, token);
-
     const headers = new HttpHeaders({
       'X-CSRF-TOKEN': token,
     });

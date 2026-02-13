@@ -115,7 +115,6 @@ export class UserForm implements OnInit {
         this.router.navigate(['user/list']);
       },
       error: (error) => {
-        console.log(error.error);
         this.errorMessages = error.error;
         this.cdr.markForCheck();
       },
@@ -137,7 +136,6 @@ export class UserForm implements OnInit {
         this.router.navigate(['user/list']);
       },
       error: (error) => {
-        console.log(error.error);
         this.errorMessages = error.error;
         this.cdr.markForCheck();
       },

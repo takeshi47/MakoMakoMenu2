@@ -9,8 +9,6 @@ export class DateUtil {
   }
 
   static addDays(date: Date, days: number): Date {
-    console.log(date, days);
-
     const newDate = new Date(date);
     newDate.setDate(newDate.getDate() + days);
 

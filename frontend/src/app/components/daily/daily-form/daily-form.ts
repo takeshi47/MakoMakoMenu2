@@ -103,8 +103,6 @@ export class DailyFormComponent implements OnInit {
   }
 
   private update(): void {
-    console.log('update');
-
     if (!this.daily?.id) {
       return;
     }
