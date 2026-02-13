@@ -32,8 +32,6 @@ export class Home implements OnInit {
   selectedViewMode: ViewMode = ViewMode.Week;
 
   ngOnInit(): void {
-    console.log(this.selectedViewMode);
-
     this.load();
   }
 
