@@ -13,17 +13,23 @@
     <!-- ボタン配置用 -->
     <div class="d-flex align-items-center mb-3">
       <button class="btn btn-sm btn-outline-primary" (click)="openNewDailyMeals()">登録</button>
-      <select
-        name="viewMode"
-        id="viewMode"
-        class="ms-auto me-2"
-        [(ngModel)]="selectedViewMode"
-        (ngModelChange)="onViewModeChange()"
-      >
+      <div class="btn-group ms-auto me-2" role="group">
         @for (mode of viewModes; track $index) {
-          <option [value]="mode">{{ mode }}</option>
+          <input
+            [id]="'mode_' + $index"
+            class="btn-check"
+            type="radio"
+            [value]="mode"
+            [(ngModel)]="selectedViewMode"
+            (ngModelChange)="onViewModeChange()"
+            name="viewModeRadio"
+            autocomplete="off"
+          />
+          <label class="btn btn-outline-secondary" [for]="'mode_' + $index">
+            {{ mode }}
+          </label>
         }
-      </select>
+      </div>
 
       <button class="btn btn-outline-secondary me-2" (click)="prev()">
         <i class="bi bi-arrow-left"></i>
@@ -32,6 +38,7 @@
         <i class="bi bi-arrow-right"></i>
       </button>
     </div>
+
     @switch (selectedViewMode) {
       @case (viewModes[0]) {
         <div class="daily-item-day">
