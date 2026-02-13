@@ -1,4 +1,26 @@
-.card-wrapper {
-  position: relative;
+.daily-item-day {
+  width: 60%;
   margin: 0 auto;
+}
+
+.daily-container-week {
+  display: flex;
+  overflow-x: auto;
+  gap: 0.5rem;
+  padding-bottom: 1rem;
+}
+
+.daily-item-week {
+  flex: 1 0 200px;
+}
+
+.month-scroll-container {
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.daily-grid-month {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(200px, 1fr));
+  gap: 0.5rem;
 }

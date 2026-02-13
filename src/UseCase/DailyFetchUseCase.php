@@ -21,10 +21,13 @@ class DailyFetchUseCase
                 $targetDateList = [$dailyFetchCriteria->baseDate];
                 break;
             case 'week':
-                $targetDateList = $this->createTargetDateList($dailyFetchCriteria->baseDate);
+                $targetDateList = $this->createWeekDateList($dailyFetchCriteria->baseDate);
+                break;
+            case 'month':
+                $targetDateList = $this->createMonthDateList($dailyFetchCriteria->baseDate);
                 break;
             default:
-                // code...
+                throw new \RuntimeException('Error Processing Request', 1);
                 break;
         }
 
@@ -40,13 +43,30 @@ class DailyFetchUseCase
         return $result;
     }
 
-    private function createTargetDateList(string $baseDate): array
+    private function createWeekDateList(string $baseDate): array
     {
         $monday = new \DateTimeImmutable($baseDate)->modify('monday this week');
 
         $result = [];
 
         for ($i = 0; $i < 7; ++$i) {
+            $result[] = $monday
+                ->modify("+{$i} days")
+                ->format('Y-m-d');
+        }
+
+        return $result;
+    }
+
+    private function createMonthDateList(string $baseDate): array
+    {
+        $base = new \DateTimeImmutable($baseDate);
+
+        $monday = $base->modify('first day of this month')->modify('monday this week');
+
+        $result = [];
+
+        for ($i = 0; $i < 35; ++$i) {
             $result[] = $monday
                 ->modify("+{$i} days")
                 ->format('Y-m-d');

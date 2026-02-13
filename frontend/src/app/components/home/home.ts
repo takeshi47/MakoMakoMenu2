@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
 import { DailyFormComponent } from '../daily/daily-form/daily-form';
 import { DateUtil } from '../../services/utils/date-util';
+import { FormsModule } from '@angular/forms';
 
 export const enum ViewMode {
   Day = 'day',
@@ -15,7 +16,7 @@ export const enum ViewMode {
 
 @Component({
   selector: 'app-home',
-  imports: [RouterModule, CommonModule],
+  imports: [RouterModule, CommonModule, FormsModule],
   templateUrl: './home.html',
   styleUrls: ['./home.scss'],
 })
@@ -27,10 +28,17 @@ export class Home implements OnInit {
 
   private modalService = inject(NgbModal);
 
-  private selectedViewMode: ViewMode = ViewMode.Week;
+  viewModes: ViewMode[] = [ViewMode.Day, ViewMode.Week, ViewMode.Month];
+  selectedViewMode: ViewMode = ViewMode.Week;
 
   ngOnInit(): void {
+    console.log(this.selectedViewMode);
+
     this.load();
+  }
+
+  onViewModeChange(): void {
+    this.load(); // データ再ロードのロジックを呼び出す
   }
 
   private load(): void {
