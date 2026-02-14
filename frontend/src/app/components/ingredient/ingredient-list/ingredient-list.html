@@ -5,7 +5,7 @@
       <i class="bi bi-plus-lg"></i> New Ingredient
     </a>
   </div>
-
+  <!--
   @if (ingredients$ | async; as ingredients) {
     @if (ingredients.length > 0) {
       <div class="table-responsive">
@@ -48,6 +48,39 @@
                   </div>
                 </td>
               </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="text-center p-5 border rounded bg-light">
+        <p class="lead">No ingredients found.</p>
+        <p>Get started by creating a new one!</p>
+      </div>
+    }
+  } @else {
+    <div class="text-center p-5">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } -->
+
+  <h4>table 2</h4>
+  @if (ingredients$ | async; as ingredients) {
+    @if (ingredients.length > 0) {
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Stock Item?</th>
+              <th scope="col" class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (ingredient of ingredients; track ingredient.id) {
+              <tr app-ingredient-list-item [ingredient]="ingredient"></tr>
             }
           </tbody>
         </table>

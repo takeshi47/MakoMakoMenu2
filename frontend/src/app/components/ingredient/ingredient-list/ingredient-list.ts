@@ -4,10 +4,11 @@ import { Observable } from 'rxjs';
 import { Ingredient } from '../../../models/ingredient';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { IngredientListItem } from "../ingredient-list-item/ingredient-list-item";
 
 @Component({
   selector: 'app-ingredient-list',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, IngredientListItem],
   templateUrl: './ingredient-list.html',
   styleUrl: './ingredient-list.scss',
 })
