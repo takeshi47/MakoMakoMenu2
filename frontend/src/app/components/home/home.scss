@@ -3,6 +3,12 @@
   margin: 0 auto;
 }
 
+@media (max-width: 767px) {
+  .daily-item-day {
+    flex: 0 0 100%;
+  }
+}
+
 .daily-container-week {
   display: flex;
   overflow-x: auto;
@@ -13,13 +19,6 @@
 .daily-item-week {
   flex: 1 0 200px;
 }
-
-@media (max-width: 767px) {
-  .daily-item-week {
-    flex: 0 0 100%;
-  }
-}
-
 
 .month-scroll-container {
   overflow-x: auto;
