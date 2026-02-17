@@ -21,7 +21,7 @@ final class IngredientController extends AbstractController
     #[Route(name: '', methods: ['GET'])]
     public function index(IngredientRepository $ingredientRepository): Response
     {
-        return $this->json($ingredientRepository->findAll());
+        return $this->json($ingredientRepository->findAll(), context: ['groups' => 'ingredient:read']);
     }
 
     #[Route('/new', name: 'new', methods: ['POST'])]
@@ -46,7 +46,7 @@ final class IngredientController extends AbstractController
     #[Route(path: '/{id}', name: 'fetch', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function getIngredient(Ingredient $ingredient): Response
     {
-        return $this->json($ingredient);
+        return $this->json($ingredient, context: ['groups' => 'ingredient:read']);
     }
 
     #[Route(path: '/edit/{id}', name: 'edit', methods: ['POST'])]

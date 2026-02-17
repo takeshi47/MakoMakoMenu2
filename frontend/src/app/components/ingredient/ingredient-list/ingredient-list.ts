@@ -1,22 +1,44 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { IngredientService } from '../../../services/ingredient-service';
-import { Observable } from 'rxjs';
 import { Ingredient } from '../../../models/ingredient';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { IngredientListItem } from "../ingredient-list-item/ingredient-list-item";
+import { IngredientListItem } from '../ingredient-list-item/ingredient-list-item';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-ingredient-list',
-  imports: [CommonModule, RouterLink, IngredientListItem],
+  imports: [CommonModule, IngredientListItem, ReactiveFormsModule],
   templateUrl: './ingredient-list.html',
   styleUrl: './ingredient-list.scss',
 })
 export class IngredientList implements OnInit {
   private ingredientService = inject(IngredientService);
-  protected ingredients$!: Observable<Ingredient[]>;
+  protected ingredients!: Ingredient[];
+  private cdr = inject(ChangeDetectorRef);
+  private fb = inject(FormBuilder);
+
+  protected isAdd = false;
+  protected form = this.fb.group({
+    name: [],
+    isStock: false,
+  });
 
   ngOnInit(): void {
-    this.ingredients$ = this.ingredientService.getIngredients();
+    this.ingredientService.getIngredients().subscribe((i) => {
+      this.ingredients = i;
+      this.cdr.markForCheck();
+    });
+  }
+
+  enableAdd(): void {
+    this.isAdd = true;
+  }
+
+  cancel(): void {
+    this.isAdd = false;
+  }
+
+  onSubmit(): void {
+    console.log(this.form.value);
   }
 }

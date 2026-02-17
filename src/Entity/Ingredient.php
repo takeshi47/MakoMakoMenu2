@@ -8,6 +8,7 @@ use App\Repository\IngredientRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: IngredientRepository::class)]
@@ -19,15 +20,18 @@ class Ingredient
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['ingredient:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 30, unique: true)]
     #[Assert\Length(max: 30)]
     #[Assert\NotBlank()]
+    #[Groups(['ingredient:read'])]
     private ?string $name = null;
 
     #[ORM\Column]
     #[Assert\NotNull()]
+    #[Groups(['ingredient:read'])]
     private ?bool $isStock = null;
 
     public function getId(): ?int

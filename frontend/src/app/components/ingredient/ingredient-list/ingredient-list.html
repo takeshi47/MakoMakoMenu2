@@ -1,101 +1,62 @@
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0">Ingredients</h2>
-    <a routerLink="/ingredient/create" class="btn btn-primary">
-      <i class="bi bi-plus-lg"></i> New Ingredient
-    </a>
   </div>
-  <!--
-  @if (ingredients$ | async; as ingredients) {
-    @if (ingredients.length > 0) {
-      <div class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead class="table-light">
-            <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Stock Item?</th>
-              <th scope="col" class="text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (ingredient of ingredients; track ingredient.id) {
-              <tr>
-                <td>
-                  <a
-                    [routerLink]="['/ingredient/detail', ingredient.id]"
-                    class="text-decoration-none"
-                    >{{ ingredient.name }}</a
-                  >
-                </td>
-                <td>
-                  @if (ingredient.isStock) {
-                    <span class="badge bg-success">Yes</span>
-                  } @else {
-                    <span class="badge bg-secondary">No</span>
-                  }
-                </td>
-                <td class="text-end">
-                  <div class="btn-group" role="group">
-                    <a
-                      [routerLink]="['/ingredient/edit', ingredient.id]"
-                      class="btn btn-sm btn-outline-secondary"
-                    >
-                      <i class="bi bi-pencil-fill"></i> Edit
-                    </a>
-                    <button class="btn btn-sm btn-outline-danger">
-                      <i class="bi bi-trash-fill"></i> Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    } @else {
-      <div class="text-center p-5 border rounded bg-light">
-        <p class="lead">No ingredients found.</p>
-        <p>Get started by creating a new one!</p>
-      </div>
-    }
-  } @else {
-    <div class="text-center p-5">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
-  } -->
 
-  <h4>table 2</h4>
-  @if (ingredients$ | async; as ingredients) {
-    @if (ingredients.length > 0) {
-      <div class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead class="table-light">
-            <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Stock Item?</th>
-              <th scope="col" class="text-end">Actions</th>
+  @if (ingredients && ingredients.length > 0) {
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Stock?</th>
+            <th scope="col" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ingredient of ingredients; track ingredient.id) {
+            <tr app-ingredient-list-item [ingredient]="ingredient"></tr>
+          }
+          @if (isAdd) {
+            <tr [formGroup]="form">
+              <td>
+                <input type="text" class="form-control" formControlName="name" />
+              </td>
+              <td>
+                <div class="form-check">
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    formControlName="isStock"
+                    id="isStock"
+                  />
+                  <label for="isStock" class="form-check-label">ストック有無</label>
+                </div>
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <button type="submit" (click)="onSubmit()">登録</button>
+                  <button class="btn btn-sm btn-outline-secondary" (click)="cancel()">
+                    やめる
+                  </button>
+                </div>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            @for (ingredient of ingredients; track ingredient.id) {
-              <tr app-ingredient-list-item [ingredient]="ingredient"></tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    } @else {
-      <div class="text-center p-5 border rounded bg-light">
-        <p class="lead">No ingredients found.</p>
-        <p>Get started by creating a new one!</p>
-      </div>
-    }
+          }
+          @if (!isAdd) {
+            <tr>
+              <td [colSpan]="3" class="text-end">
+                <button class="btn btn-sm btn-secondary" (click)="enableAdd()">追加</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   } @else {
-    <div class="text-center p-5">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
+    <div class="text-center p-5 border rounded bg-light">
+      <p class="lead">No ingredients found.</p>
+      <p>Get started by creating a new one!</p>
     </div>
   }
 </div>
