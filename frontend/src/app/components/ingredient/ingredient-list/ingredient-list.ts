@@ -3,10 +3,11 @@ import { IngredientService } from '../../../services/ingredient-service';
 import { Ingredient } from '../../../models/ingredient';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { IngredientForm } from '../ingredient-form/ingredient-form';
 
 @Component({
   selector: 'app-ingredient-list',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, IngredientForm],
   templateUrl: './ingredient-list.html',
   styleUrl: './ingredient-list.scss',
 })
