@@ -1,139 +1,122 @@
-<div class="bg-light min-vh-100">
-  <!-- Header -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-3 sticky-top">
-    <div class="container-fluid">
-      <a class="navbar-brand mb-0 h1" routerLink="/">Header</a>
-      <button class="btn btn-outline-secondary rounded-circle ms-auto" routerLink="/user/profile">
-        <i class="bi bi-person-fill"></i>
-      </button>
-    </div>
-  </nav>
-
-  <div class="container-fluid py-3">
-    <!-- ボタン配置用 -->
-    <div class="d-flex align-items-center mb-3">
-      <button class="btn btn-sm btn-outline-primary" (click)="openNewDailyMeals()">登録</button>
-      <div class="btn-group ms-auto me-2" role="group">
-        @for (mode of viewModes; track $index) {
-          <input
-            [id]="'mode_' + $index"
-            class="btn-check"
-            type="radio"
-            [value]="mode"
-            [(ngModel)]="selectedViewMode"
-            (ngModelChange)="onViewModeChange()"
-            name="viewModeRadio"
-            autocomplete="off"
-          />
-          <label class="btn btn-outline-secondary" [for]="'mode_' + $index">
-            {{ mode }}
-          </label>
-        }
-      </div>
-
-      <button class="btn btn-outline-secondary me-2" (click)="prev()">
-        <i class="bi bi-arrow-left"></i>
-      </button>
-      <button class="btn btn-outline-secondary" (click)="next()">
-        <i class="bi bi-arrow-right"></i>
-      </button>
-    </div>
-
-    @switch (selectedViewMode) {
-      @case (viewModes[0]) {
-        <div class="daily-item-day">
-          @for (dailyMeal of dailyMeals; track $index) {
-            <ng-container
-              *ngTemplateOutlet="dailyCard; context: { $implicit: dailyMeal }"
-            ></ng-container>
-          }
-        </div>
-      }
-      @case (viewModes[1]) {
-        <div class="daily-container-week">
-          @for (dailyMeal of dailyMeals; track $index) {
-            <div class="daily-item-week">
-              <ng-container
-                *ngTemplateOutlet="dailyCard; context: { $implicit: dailyMeal }"
-              ></ng-container>
-            </div>
-          }
-        </div>
-      }
-      @case (viewModes[2]) {
-        <div class="month-scroll-container">
-          <div class="daily-grid-month">
-            @for (dailyMeal of dailyMeals; track $index) {
-              <div class="daily-item-month">
-                <ng-container
-                  *ngTemplateOutlet="dailyCard; context: { $implicit: dailyMeal }"
-                ></ng-container>
-              </div>
-            }
-          </div>
-        </div>
-      }
+<!-- ボタン配置用 -->
+<div class="d-flex align-items-center mb-3">
+  <button class="btn btn-sm btn-outline-primary" (click)="openNewDailyMeals()">登録</button>
+  <div class="btn-group ms-auto me-2" role="group">
+    @for (mode of viewModes; track $index) {
+      <input
+        [id]="'mode_' + $index"
+        class="btn-check"
+        type="radio"
+        [value]="mode"
+        [(ngModel)]="selectedViewMode"
+        (ngModelChange)="onViewModeChange()"
+        name="viewModeRadio"
+        autocomplete="off"
+      />
+      <label class="btn btn-outline-secondary" [for]="'mode_' + $index">
+        {{ mode }}
+      </label>
     }
   </div>
 
-  <ng-template #dailyCard let-dailyMeal>
-    <div class="card h-100">
-      <div class="card-header text-center fw-bold">
-        {{ dailyMeal.date | date: 'yyyy-MM-dd' }}
-      </div>
+  <button class="btn btn-outline-secondary me-2" (click)="prev()">
+    <i class="bi bi-arrow-left"></i>
+  </button>
+  <button class="btn btn-outline-secondary" (click)="next()">
+    <i class="bi bi-arrow-right"></i>
+  </button>
+</div>
 
-      <div class="card-body">
-        @if (dailyMeal.meals && dailyMeal.meals.length > 0) {
-          @for (meal of dailyMeal.meals; track $index) {
-            @if ($index !== 0) {
-              <hr />
-            }
-            <div class="mb-1">
-              <h5 class="fw-semibold">
-                {{ meal.mealType }}
-              </h5>
-
-              <ul class="list-unstyled mb-0">
-                @for (menu of meal.menu; track $index) {
-                  <li>
-                    {{ menu.name }}
-                  </li>
-                }
-              </ul>
-            </div>
-          }
-        } @else {
-          <!-- 未登録の場合の表示 -->
-          <div class="d-flex flex-column align-items-center justify-content-center h-100">
-            <p class="text-muted">未登録だってばよ</p>
+@switch (selectedViewMode) {
+  @case (viewModes[0]) {
+    <div class="daily-item-day">
+      @for (dailyMeal of dailyMeals; track $index) {
+        <ng-container
+          *ngTemplateOutlet="dailyCard; context: { $implicit: dailyMeal }"
+        ></ng-container>
+      }
+    </div>
+  }
+  @case (viewModes[1]) {
+    <div class="daily-container-week">
+      @for (dailyMeal of dailyMeals; track $index) {
+        <div class="daily-item-week">
+          <ng-container
+            *ngTemplateOutlet="dailyCard; context: { $implicit: dailyMeal }"
+          ></ng-container>
+        </div>
+      }
+    </div>
+  }
+  @case (viewModes[2]) {
+    <div class="month-scroll-container">
+      <div class="daily-grid-month">
+        @for (dailyMeal of dailyMeals; track $index) {
+          <div class="daily-item-month">
+            <ng-container
+              *ngTemplateOutlet="dailyCard; context: { $implicit: dailyMeal }"
+            ></ng-container>
           </div>
         }
       </div>
-      <div class="card-footer text-end">
-        @if (dailyMeal.id) {
-          <button class="btn btn-sm btn-outline-primary" (click)="openEditDailyMeals(dailyMeal)">
-            編集
-          </button>
-        } @else {
-          <button
-            class="btn btn-sm btn-outline-primary"
-            (click)="openNewDailyMeals(dailyMeal?.date)"
-          >
-            登録
-          </button>
-        }
-      </div>
     </div>
-  </ng-template>
+  }
+}
 
-  <!-- 下部のリンク群 -->
-  <div class="container py-4" style="bottom: 0">
-    <hr />
-    <div class="d-flex justify-content-around">
-      <a routerLink="/user/list" class="btn btn-link text-decoration-none">ユーザーリスト</a>
-      <a routerLink="/ingredient/list" class="btn btn-link text-decoration-none">材料フォーム</a>
-      <a routerLink="/menu/list" class="btn btn-link text-decoration-none">メニューフォーム</a>
-      <a routerLink="/daily" class="btn btn-link text-decoration-none">献立フォーム</a>
+<ng-template #dailyCard let-dailyMeal>
+  <div class="card h-100">
+    <div class="card-header text-center fw-bold">
+      {{ dailyMeal.date | date: 'yyyy-MM-dd' }}
     </div>
+
+    <div class="card-body">
+      @if (dailyMeal.meals && dailyMeal.meals.length > 0) {
+        @for (meal of dailyMeal.meals; track $index) {
+          @if ($index !== 0) {
+            <hr />
+          }
+          <div class="mb-1">
+            <h5 class="fw-semibold">
+              {{ meal.mealType }}
+            </h5>
+
+            <ul class="list-unstyled mb-0">
+              @for (menu of meal.menu; track $index) {
+                <li>
+                  {{ menu.name }}
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      } @else {
+        <!-- 未登録の場合の表示 -->
+        <div class="d-flex flex-column align-items-center justify-content-center h-100">
+          <p class="text-muted">未登録だってばよ</p>
+        </div>
+      }
+    </div>
+    <div class="card-footer text-end">
+      @if (dailyMeal.id) {
+        <button class="btn btn-sm btn-outline-primary" (click)="openEditDailyMeals(dailyMeal)">
+          編集
+        </button>
+      } @else {
+        <button class="btn btn-sm btn-outline-primary" (click)="openNewDailyMeals(dailyMeal?.date)">
+          登録
+        </button>
+      }
+    </div>
+  </div>
+</ng-template>
+
+<!-- 下部のリンク群 -->
+<div class="container py-4" style="bottom: 0">
+  <hr />
+  <div class="d-flex justify-content-around">
+    <a routerLink="/user/list" class="btn btn-link text-decoration-none">ユーザーリスト</a>
+    <a routerLink="/ingredient/list" class="btn btn-link text-decoration-none">材料フォーム</a>
+    <a routerLink="/menu/list" class="btn btn-link text-decoration-none">メニューフォーム</a>
+    <a routerLink="/daily" class="btn btn-link text-decoration-none">献立フォーム</a>
   </div>
 </div>

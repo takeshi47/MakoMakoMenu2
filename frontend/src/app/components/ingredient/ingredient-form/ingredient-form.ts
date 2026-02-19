@@ -65,15 +65,12 @@ export class IngredientForm implements OnInit {
 
   private create(payload: Partial<Ingredient> & { _token: string }): void {
     this.ingredientService.create(payload).subscribe({
-      next: (res) => {
-        console.log(res);
-
+      next: () => {
         this.complete.emit();
       },
       error: (error) => {
         this.errorMessages = error.error;
         this.cdr.markForCheck();
-        console.log(error);
         console.log(this.errorMessages);
       },
     });
@@ -85,14 +82,13 @@ export class IngredientForm implements OnInit {
     }
 
     this.ingredientService.edit(this.ingredient.id, payload).subscribe({
-      next: (res) => {
-        console.log(res);
+      next: () => {
         this.complete.emit(this.ingredient?.id);
       },
       error: (error) => {
         this.errorMessages = error.error;
-        console.log(this.errorMessages);
         this.cdr.markForCheck();
+        console.log(this.errorMessages);
       },
     });
   }
