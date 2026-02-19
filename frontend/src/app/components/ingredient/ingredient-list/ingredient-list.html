@@ -16,7 +16,13 @@
         <tbody>
           @for (ingredient of ingredients; track ingredient.id) {
             @if (isEdit(ingredient.id)) {
-              <tr app-ingredient-form [ingredient]="ingredient"></tr>
+              <tr
+                app-ingredient-form
+                [ingredient]="ingredient"
+                [csrfToken]="csrfToken"
+                (cancelForm)="cancelEditing($event)"
+                (complete)="completeEdit($event)"
+              ></tr>
             } @else {
               <tr>
                 <td>
@@ -41,7 +47,12 @@
             }
           }
           @if (isAdd) {
-            <tr app-ingredient-form></tr>
+            <tr
+              app-ingredient-form
+              [csrfToken]="csrfToken"
+              (cancelForm)="cancelAdd()"
+              (complete)="completeAdd()"
+            ></tr>
           }
           @if (!isAdd) {
             <tr>

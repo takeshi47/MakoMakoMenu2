@@ -1,7 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
+import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Ingredient } from '../../../models/ingredient';
+import { IngredientService } from '../../../services/ingredient-service';
 
 export interface BackendFormErrors {
   [key: string]: BackendFormErrors;
@@ -14,35 +23,77 @@ export interface BackendFormErrors {
   styleUrl: './ingredient-form.scss',
 })
 export class IngredientForm implements OnInit {
-  @Input() id: number | null = null;
   @Input() ingredient: Ingredient | null = null;
+  @Input({ required: true }) csrfToken = '';
 
-  private fb = inject(FormBuilder);
+  @Output() cancelForm: EventEmitter<number | null> = new EventEmitter<number | null>();
+  @Output() complete: EventEmitter<number | null> = new EventEmitter<number | null>();
+
+  private ingredientService = inject(IngredientService);
+  private fb = inject(NonNullableFormBuilder);
+  private cdr = inject(ChangeDetectorRef);
 
   form = this.fb.group({
     name: '',
     isStock: false,
   });
 
+  protected errorMessages: BackendFormErrors | null = null;
+
   ngOnInit(): void {
     if (this.ingredient) {
       this.form.patchValue(this.ingredient);
     }
-    console.log('onInit');
-    console.log(this.form.value);
-    console.log(this.ingredient);
   }
 
-  onSubmit(id: number | null = null): void {
-    console.log('onSubmit', id);
-    console.log(this.form.value);
+  onSubmit(): void {
+    const payload = {
+      ...this.form.getRawValue(),
+      _token: this.csrfToken,
+    };
+
+    if (this.ingredient?.id) {
+      this.update(payload);
+    } else {
+      this.create(payload);
+    }
   }
 
-  cancelEditing(id: number): void {
-    console.log('cancelEditing', id);
+  cancel(): void {
+    this.cancelForm.emit(this.ingredient?.id);
   }
 
-  cancelAdd(): void {
-    console.log('cancel');
+  private create(payload: Partial<Ingredient> & { _token: string }): void {
+    this.ingredientService.create(payload).subscribe({
+      next: (res) => {
+        console.log(res);
+
+        this.complete.emit();
+      },
+      error: (error) => {
+        this.errorMessages = error.error;
+        this.cdr.markForCheck();
+        console.log(error);
+        console.log(this.errorMessages);
+      },
+    });
+  }
+
+  private update(payload: Partial<Ingredient> & { _token: string }): void {
+    if (!this.ingredient?.id) {
+      return;
+    }
+
+    this.ingredientService.edit(this.ingredient.id, payload).subscribe({
+      next: (res) => {
+        console.log(res);
+        this.complete.emit(this.ingredient?.id);
+      },
+      error: (error) => {
+        this.errorMessages = error.error;
+        console.log(this.errorMessages);
+        this.cdr.markForCheck();
+      },
+    });
   }
 }

@@ -2,12 +2,11 @@ import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { IngredientService } from '../../../services/ingredient-service';
 import { Ingredient } from '../../../models/ingredient';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { IngredientForm } from '../ingredient-form/ingredient-form';
 
 @Component({
   selector: 'app-ingredient-list',
-  imports: [CommonModule, ReactiveFormsModule, IngredientForm],
+  imports: [CommonModule, IngredientForm],
   templateUrl: './ingredient-list.html',
   styleUrl: './ingredient-list.scss',
 })
@@ -15,17 +14,21 @@ export class IngredientList implements OnInit {
   private ingredientService = inject(IngredientService);
   protected ingredients!: Ingredient[];
   private cdr = inject(ChangeDetectorRef);
-  private fb = inject(FormBuilder);
-  protected _isEdit = false;
-  protected editableIds: number[] = [];
+
+  protected csrfToken = '';
 
   protected isAdd = false;
-  protected form = this.fb.group({
-    name: [],
-    isStock: false,
-  });
+  protected editableIds: number[] = [];
 
   ngOnInit(): void {
+    this.load();
+
+    this.ingredientService.fetchCsrfToken().subscribe((token) => {
+      this.csrfToken = token;
+    });
+  }
+
+  protected load(): void {
     this.ingredientService.getIngredients().subscribe((i) => {
       this.ingredients = i;
       this.cdr.markForCheck();
@@ -36,8 +39,22 @@ export class IngredientList implements OnInit {
     this.isAdd = true;
   }
 
-  cancel(): void {
+  cancelAdd(): void {
     this.isAdd = false;
+  }
+
+  completeEdit(id: number | null): void {
+    if (!id) {
+      return;
+    }
+
+    this.cancelEditing(id);
+    this.load();
+  }
+
+  completeAdd(): void {
+    this.cancelAdd();
+    this.load();
   }
 
   cancelEditing(id: number | null): void {
@@ -46,9 +63,6 @@ export class IngredientList implements OnInit {
     }
 
     this.editableIds = this.editableIds.filter((v) => v !== id);
-    console.log('cancelEditing');
-
-    console.log(this.editableIds);
   }
 
   enableEdit(id: number | null): void {
@@ -59,11 +73,6 @@ export class IngredientList implements OnInit {
     if (!this.editableIds.includes(id)) {
       this.editableIds.push(id);
     }
-    console.log(this.editableIds);
-  }
-
-  onSubmit(id: number | null = null): void {
-    console.log(id, this.form.value);
   }
 
   isEdit(targetId: number): boolean {
