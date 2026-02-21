@@ -71,8 +71,8 @@ final class IngredientController extends AbstractController
     {
         $submittedToken = $request->headers->get('X-CSRF-TOKEN');
 
-        if (!$this->isCsrfTokenValid('ingredient_delete_'.$ingredient->getId(), $submittedToken)) {
-            return $this->json(['error' => 'Invalid CSRF TOKEN']);
+        if (!$this->isCsrfTokenValid('ingredient_form', $submittedToken)) {
+            return $this->json(['error' => 'Invalid CSRF TOKEN'], Response::HTTP_BAD_REQUEST);
         }
 
         $entityManager->remove($ingredient);

@@ -35,7 +35,7 @@ export class IngredientService {
   }
 
   fetchCsrfToken(): Observable<string> {
-    const tokenId = 'ingredient_create';
+    const tokenId = 'ingredient_form';
 
     return this.http
       .get<{ token: string }>(`${this.baseUrl}/csrf-token/${tokenId}`)

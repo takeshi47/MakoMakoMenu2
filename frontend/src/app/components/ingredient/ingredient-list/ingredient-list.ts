@@ -78,4 +78,17 @@ export class IngredientList implements OnInit {
   isEdit(targetId: number): boolean {
     return this.editableIds.includes(targetId);
   }
+
+  delete(id: number): void {
+    this.ingredientService.delete(id, this.csrfToken).subscribe({
+      next: () => {
+        this.load();
+        confirm('delete completed');
+      },
+      error: (error) => {
+        console.error(error);
+        alert(error.error);
+      },
+    });
+  }
 }
