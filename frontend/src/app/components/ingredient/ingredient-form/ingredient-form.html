@@ -1,6 +1,19 @@
 <ng-container [formGroup]="form">
   <td>
-    <input id="name_{{ ingredient?.id }}" type="text" class="form-control" formControlName="name" />
+    <div class="position-relative">
+      <input
+        id="name_{{ ingredient?.id }}"
+        type="text"
+        class="form-control"
+        formControlName="name"
+        [class.is-invalid]="errorMessages?.['name']"
+      />
+      <div class="invalid-tooltip">
+        @for (msg of errorMessages && errorMessages['name']; track $index) {
+          {{ msg }}
+        }
+      </div>
+    </div>
   </td>
   <td>
     <div class="form-check">
