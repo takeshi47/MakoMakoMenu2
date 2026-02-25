@@ -18,6 +18,9 @@ class DailyRepository extends ServiceEntityRepository
         parent::__construct($registry, Daily::class);
     }
 
+    /**
+     * @return Daily[]
+     */
     public function findByDateList(array $targetDateList): array
     {
         if ($targetDateList === []) {
