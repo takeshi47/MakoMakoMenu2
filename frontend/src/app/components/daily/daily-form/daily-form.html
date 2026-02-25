@@ -1,18 +1,18 @@
-<div class="modal-header">
-  <h4 class="modal-title" id="modal-basic-title">たべるものを登録</h4>
+<div class="modal-header border-0 pb-0">
+  <h2 class="modal-title fw-800" id="modal-basic-title">たべるものを登録</h2>
   <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()"></button>
 </div>
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="modal-body">
     <!-- 日付入力フィールド -->
-    <div class="mb-3">
-      <label for="date" class="h5 form-label">日付:</label>
+    <div class="ac-card mb-4 bg-white border-3">
+      <label for="date" class="h5 fw-bold mb-2 d-block">いつたべる？</label>
       <input
         id="date"
         type="date"
         formControlName="date"
-        class="form-control"
+        class="form-control form-control-lg"
         [ngClass]="{
           'is-invalid':
             errorMessages?.['date'] ||
@@ -21,16 +21,8 @@
       />
       @if (form.get('date')?.invalid && (form.get('date')?.touched || form.get('date')?.dirty)) {
         <div class="invalid-feedback d-block">
-          <!-- d-block を追加して常に表示 -->
           @if (form.get('date')?.hasError('required')) {
             日付は必須です。
-          }
-        </div>
-      }
-      @if (errorMessages?.['date']) {
-        <div class="invalid-feedback d-block">
-          @for (error of errorMessages?.['date'] | keyvalue; track error) {
-            <span>{{ error.value }}</span>
           }
         </div>
       }
@@ -38,30 +30,30 @@
 
     <!-- 食事(meals)のFormArrayを描画するセクション -->
     <div formArrayName="meals">
-      <h3 class="h5">食事:</h3>
+      <h3 class="h4 fw-800 mb-3 ps-2">なにをたべる？</h3>
 
       <!-- 各食事を @for でループして描画 -->
       @for (meal of meals.controls; track meal; let i = $index) {
-        <div [formGroupName]="i" class="border rounded p-3 mb-3">
+        <div [formGroupName]="i" class="ac-card mb-4 border-2 shadow-sm" style="background: rgba(255,255,255,0.5)">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="h6 mb-0">食事 {{ i + 1 }}</h4>
+            <h4 class="h5 fw-bold mb-0 text-brown">ごはん {{ i + 1 }}</h4>
             @if (canRemoveMeal()) {
               <button
                 type="button"
                 (click)="removeMeal(i)"
-                class="btn-close"
+                class="btn btn-sm btn-outline-danger border-2 rounded-circle"
                 aria-label="この食事を削除"
-              ></button>
+              ><i class="bi bi-x-lg"></i></button>
             }
           </div>
 
           <!-- 食事タイプ (朝食/昼食/夕食) -->
           <div class="mb-3">
-            <label [for]="'mealType' + i" class="form-label">タイプ:</label>
+            <label [for]="'mealType' + i" class="form-label fw-bold small">いつのごはん？</label>
             <select ngbAutofocus
               [id]="'mealType' + i"
               formControlName="mealType"
-              class="form-select"
+              class="form-select border-2"
               [ngClass]="{
                 'is-invalid':
                   errorMessages?.['meals']?.[i]?.['mealType'] ||
@@ -69,64 +61,29 @@
                     (meals.at(i).get('mealType')?.touched || meals.at(i).get('mealType')?.dirty)),
               }"
             >
-              <option [value]="null">食事タイプを選択</option>
-              <option [value]="this.MEAL_TYPE_CHOICES[0]">朝食</option>
-              <option [value]="this.MEAL_TYPE_CHOICES[1]">昼食</option>
-              <option [value]="this.MEAL_TYPE_CHOICES[2]">夕食</option>
+              <option [value]="null">えらんでね</option>
+              <option [value]="this.MEAL_TYPE_CHOICES[0]">あさごはん</option>
+              <option [value]="this.MEAL_TYPE_CHOICES[1]">ひるごはん</option>
+              <option [value]="this.MEAL_TYPE_CHOICES[2]">ばんごはん</option>
             </select>
-            @if (
-              meals.at(i).get('mealType')?.invalid &&
-              (meals.at(i).get('mealType')?.touched || meals.at(i).get('mealType')?.dirty)
-            ) {
-              <div class="invalid-feedback d-block">
-                @if (meals.at(i).get('mealType')?.hasError('required')) {
-                  食事タイプは必須です。
-                }
-              </div>
-            }
-            @if (errorMessages?.['meals']?.[i]?.['mealType']; as errorMessages) {
-              <div class="invalid-feedback d-block">
-                @for (error of errorMessages | keyvalue; track error) {
-                  <span>{{ error.value }}</span>
-                }
-              </div>
-            }
           </div>
 
           <!-- メニュー(menu)のFormArrayを描画するセクション -->
-          <div formArrayName="menu">
-            <p class="form-label">メニューIDリスト:</p>
+          <div formArrayName="menu" class="ps-3 border-start border-3 border-brown">
+            <p class="form-label fw-bold small">メニュー:</p>
 
-            <!-- FormArray全体のエラー (Count, Backendエラーなど) -->
-            @if (getMenus(i).invalid && (getMenus(i).touched || getMenus(i).dirty)) {
-              <div class="invalid-feedback d-block mb-2">
-                @if (getMenus(i).hasError('min')) {
-                  メニューは最低1つ選択してください。
-                }
-              </div>
-            }
-
-            @if (errorMessages?.['meals']?.[i]?.['meals']; as errorMessages) {
-              <div class="invalid-feedback d-block mb-2">
-                @for (error of errorMessages | keyvalue; track error) {
-                  <span>{{ error.value }}</span>
-                }
-              </div>
-            }
-
-            <!-- 各メニューを @for でループして描画 -->
             @for (menu of getMenus(i).controls; track menu; let j = $index) {
               <div class="input-group mb-2">
                 <select
                   [formControlName]="j"
-                  class="form-select"
+                  class="form-select border-2"
                   [ngClass]="{
                     'is-invalid':
                       errorMessages?.['meals']?.[i]?.['menu']?.[j] ||
                       (menu.invalid && (menu.touched || menu.dirty)),
                   }"
                 >
-                  <option [ngValue]="null" disabled>メニューを選択</option>
+                  <option [ngValue]="null" disabled>なににする？</option>
                   @for (menu of menusChoices; track menu.id) {
                     <option [ngValue]="menu.id">{{ menu.name }}</option>
                   }
@@ -135,45 +92,30 @@
                   <button
                     type="button"
                     (click)="removeMenu(i, j)"
-                    class="btn btn-outline-secondary"
-                    type="button"
+                    class="btn btn-outline-brown border-2"
                   >
                     ×
                   </button>
                 }
               </div>
-              @if (menu.invalid && (menu.touched || menu.dirty)) {
-                <div class="invalid-feedback d-block">
-                  @if (menu.hasError('required')) {
-                    メニューは必須です。
-                  }
-                </div>
-              }
-              @if (errorMessages?.['meals']?.[i]?.['menu']?.[j]; as errorMessages) {
-                <div class="invalid-feedback d-block">
-                  @for (error of errorMessages | keyvalue; track error) {
-                    <span>{{ error.value }}</span>
-                  }
-                </div>
-              }
             }
 
-            <button type="button" (click)="addMenu(i)" class="btn btn-sm btn-outline-primary mt-2">
-              ＋ メニューを追加
+            <button type="button" (click)="addMenu(i)" class="btn btn-sm btn-outline-primary border-2 mt-1 fw-bold">
+              ＋ メニューをふやす
             </button>
           </div>
         </div>
       }
     </div>
     @if (canAddMeal()) {
-      <button type="button" (click)="addMeal()" class="btn btn-secondary d-block w-100">
-        ＋ 食事を追加
+      <button type="button" (click)="addMeal()" class="btn btn-secondary border-2 d-block w-100 fw-bold py-2 mb-3">
+        ＋ ごはんをふやす
       </button>
     }
   </div>
-  <div class="modal-footer justify-content-center">
-    <button type="submit" [disabled]="!form.valid" class="btn btn-primary btn-lg d-block w-100">
-      登録
+  <div class="modal-footer border-0 pt-0">
+    <button type="submit" [disabled]="!form.valid" class="btn btn-primary btn-lg d-block w-100 py-3 shadow">
+      これでけってい！
     </button>
   </div>
 </form>
