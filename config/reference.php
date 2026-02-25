@@ -1257,6 +1257,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     services?: ServicesConfig,
  *     framework?: FrameworkConfig,
  *     security?: SecurityConfig,
+ *     twig?: TwigConfig,
  *     doctrine?: DoctrineConfig,
  *     doctrine_migrations?: DoctrineMigrationsConfig,
  *     "when@dev"?: array{
@@ -1278,6 +1279,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         services?: ServicesConfig,
  *         framework?: FrameworkConfig,
  *         security?: SecurityConfig,
+ *         twig?: TwigConfig,
  *         doctrine?: DoctrineConfig,
  *         doctrine_migrations?: DoctrineMigrationsConfig,
  *     },
@@ -1287,6 +1289,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         services?: ServicesConfig,
  *         framework?: FrameworkConfig,
  *         security?: SecurityConfig,
+ *         twig?: TwigConfig,
  *         web_profiler?: WebProfilerConfig,
  *         doctrine?: DoctrineConfig,
  *         doctrine_migrations?: DoctrineMigrationsConfig,
