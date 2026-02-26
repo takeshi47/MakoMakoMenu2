@@ -5,11 +5,13 @@ monolog:
 when@dev:
     monolog:
         handlers:
+            # メインのログファイル出力
             main:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
-                channels: ["!event"]
+                channels: ["!event"] # Symfony内部のイベント通知はノイズになるので除外
+            # コンソール（bin/console）実行時にターミナルにログを表示
             console:
                 type: console
                 process_psr_3_messages: false
@@ -32,6 +34,7 @@ when@test:
 when@prod:
     monolog:
         handlers:
+            # FingersCrossed: エラーが発生した時だけ、そのリクエストの全ログを書き出す
             main:
                 type: fingers_crossed
                 action_level: error
@@ -42,8 +45,9 @@ when@prod:
             nested:
                 type: stream
                 path: php://stderr
-                level: debug
+                level: debug # fingers_crossedが発動した際はdebugレベルまで遡って記録
                 formatter: monolog.formatter.json
+                max_files: 10 # 10日分保持
             console:
                 type: console
                 process_psr_3_messages: false
