@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { MenuService } from '../../../services/menu-service';
 import { catchError, EMPTY, Observable } from 'rxjs';
 import { Menu } from '../../../models/menu';
@@ -15,36 +15,60 @@ import { MenuForm } from '../menu-form/menu-form';
 export class MenuList implements OnInit {
   private menuService = inject(MenuService);
   private modalService = inject(NgbModal);
+  private cdr = inject(ChangeDetectorRef);
+
   protected menus$!: Observable<Menu[]>;
 
+  private csrfTokenDelete = '';
+
   ngOnInit(): void {
+    this.menuService.fetchCsrfTokenDelete().subscribe((v) => (this.csrfTokenDelete = v));
     this.loadMenus();
   }
 
   private loadMenus(): void {
+    console.log('loadMenus');
+
     this.menus$ = this.menuService.fetchAll().pipe(
       catchError((err) => {
         console.error(err);
         return EMPTY;
       }),
     );
+
+    this.cdr.markForCheck();
   }
 
-  protected onDelete(id: number): void {
+  protected onDelete(id: number | null): void {
+    if (id === null) {
+      return;
+    }
+
     if (!confirm('本当に削除して大丈夫？')) {
       return;
     }
 
-    // todo: 削除処理
-    console.log(id);
+    this.menuService
+      .delete(id, this.csrfTokenDelete)
+      .subscribe({
+        next: (res) => console.log(res),
+        error: (err) => {
+          alert(
+            `status: ${err.status} \n` + `error: ${err.error.error}\n` + `message: ${err.message}`,
+          );
+        },
+      })
+      .add(() => {
+        this.loadMenus();
+      });
   }
 
-  protected openMenuForm(id: number | null = null): void {
+  protected openMenuForm(menu: Menu | null = null): void {
     const modalRef = this.modalService.open(MenuForm, {
-      size: 'mg',
+      size: 'lg',
     });
 
-    modalRef.componentInstance.id = id;
+    modalRef.componentInstance.menu = menu;
 
     modalRef.result.then(
       () => {

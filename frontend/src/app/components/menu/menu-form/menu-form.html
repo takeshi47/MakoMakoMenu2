@@ -1,33 +1,97 @@
-<h1>メニュー登録</h1>
+<div class="modal-header border-0 pb-0">
+  <h2 class="modal-title fw-800" id="modal-basic-title">
+    {{ isEditMode ? 'メニューを編集' : 'メニューを登録' }}
+  </h2>
+  <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()"></button>
+</div>
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <label for="name">メニュー名：</label>
-  <input type="text" id="name" formControlName="name" placeholder="たこ焼き" />
-  @if (form.get('name')?.touched && form.get('name')?.invalid) {
-    @if (form.get('name')?.hasError('required')) {
-      <p>name is required</p>
-    }
-  }
-  @if (errorMessages && errorMessages['name']) {
-    @for (errorMessage of errorMessages['name'] | keyvalue; track $index) {
-      {{ errorMessage.value }}
-    }
-  }
-  <hr />
-  <label for="ingredients">使う材料</label>
-  <select id="ingredients" formControlName="ingredients" multiple>
-    @for (ingredient of availableIngredients; track $index) {
-      <option [value]="ingredient.id" [disabled]="!ingredient.isStock">
-        {{ ingredient.name }}
-      </option>
-    }
-  </select>
-  @if (errorMessages && errorMessages['ingredients']) {
-    @for (errorMessage of errorMessages['ingredients'] | keyvalue; track $index) {
-      {{ errorMessage.value }}
-    }
-  }
-  <button>onSubmit</button>
-</form>
+  <div class="modal-body">
+    <!-- メニュー名 -->
+    <div class="card mb-4 bg-white border-3">
+      <label for="name" class="h5 fw-bold mb-2 d-block">メニュー名</label>
+      <input
+        id="name"
+        type="text"
+        formControlName="name"
+        class="form-control form-control-lg"
+        placeholder="パスタ"
+        [ngClass]="{
+          'is-invalid':
+            errorMessages?.['name'] ||
+            (form.get('name')?.invalid && (form.get('name')?.touched || form.get('name')?.dirty)),
+        }"
+        ngbAutoFocus
+      />
+      @if (form.get('name')?.invalid && (form.get('name')?.touched || form.get('name')?.dirty)) {
+        <div class="invalid-feedback d-block">
+          @if (form.get('name')?.hasError('required')) {
+            メニュー名は必須です。
+          }
+        </div>
+      }
+      @if (errorMessages?.['name']) {
+        <div class="invalid-feedback d-block">
+          @for (msg of errorMessages?.['name'] | keyvalue; track $index) {
+            {{ msg.value }}
+          }
+        </div>
+      }
+    </div>
 
-<p>menu-form works!</p>
+    <!-- 材料 -->
+    <div class="card bg-white border-3">
+      <h5 class="fw-bold mb-3 d-block">つかう材料</h5>
+      <div class="ingredient-list p-2 border-2 rounded-4">
+        @for (ingredient of availableIngredients; track ingredient.id) {
+          <div class="mb-2">
+            <input
+              type="checkbox"
+              class="btn-check"
+              [id]="'ing-' + ingredient.id"
+              [checked]="isIngredientSelected(ingredient.id)"
+              (change)="toggleIngredient(ingredient.id)"
+            />
+            <label
+              class="btn w-100 text-start border-2 rounded-pill px-3 py-2 fw-bold"
+              [for]="'ing-' + ingredient.id"
+              [ngClass]="{
+                'btn-brown selected shadow-sm': isIngredientSelected(ingredient.id),
+                'btn-outline-brown': !isIngredientSelected(ingredient.id),
+              }"
+            >
+              <!-- // 'opacity-50': !ingredient.isStock, -->
+              <i
+                class="bi me-2"
+                [ngClass]="
+                  isIngredientSelected(ingredient.id) ? 'bi-check-circle-fill' : 'bi-circle'
+                "
+              ></i>
+              {{ ingredient.name }}
+              @if (!ingredient.isStock) {
+                <span class="badge bg-secondary float-end mt-1">ざいこなし</span>
+              }
+            </label>
+          </div>
+        }
+      </div>
+      @if (errorMessages?.['ingredients']) {
+        <div class="invalid-feedback d-block mt-2">
+          @for (msg of errorMessages?.['ingredients'] | keyvalue; track $index) {
+            {{ msg.value }}
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="modal-footer border-0 pt-0">
+    <button
+      type="submit"
+      [disabled]="!form.valid"
+      class="btn btn-primary btn-lg d-block w-100 py-3 shadow"
+    >
+      {{ isEditMode ? 'これでへんこう！' : 'これでけってい！' }}
+    </button>
+  </div>
+</form>

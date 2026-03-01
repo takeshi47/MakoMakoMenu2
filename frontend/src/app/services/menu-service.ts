@@ -47,8 +47,8 @@ export class MenuService {
       .pipe(map((csrfToken) => csrfToken.token));
   }
 
-  fetchCsrfTokenDelete(id: number): Observable<string> {
-    const tokenId = `menu_delete_${id}`;
+  fetchCsrfTokenDelete(): Observable<string> {
+    const tokenId = 'menu_delete';
 
     return this.http
       .get<{ token: string }>(`${this.baseUrl}/csrf-token/${tokenId}`)

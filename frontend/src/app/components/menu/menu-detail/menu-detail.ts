@@ -32,7 +32,7 @@ export class MenuDetail implements OnInit {
         }
         return forkJoin({
           menu: this.menuService.fetch(id),
-          csrf: this.menuService.fetchCsrfTokenDelete(id),
+          csrf: this.menuService.fetchCsrfTokenDelete(),
         });
       }),
       // 副作用は tap に閉じ込める

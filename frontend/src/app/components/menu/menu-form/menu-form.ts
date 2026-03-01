@@ -1,11 +1,18 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input, OnInit } from '@angular/core';
 import { MenuService } from '../../../services/menu-service';
-import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormArray,
+  FormControl,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Ingredient } from '../../../models/ingredient';
 import { IngredientService } from '../../../services/ingredient-service';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { Menu } from '../../../models/menu';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal';
 
 export interface BackendFormErrors {
   [key: string]: BackendFormErrors;
@@ -18,53 +25,35 @@ export interface BackendFormErrors {
   styleUrl: './menu-form.scss',
 })
 export class MenuForm implements OnInit {
+  @Input() menu: Menu | null = null;
   private menuService = inject(MenuService);
   private ingredientService = inject(IngredientService);
   private fb = inject(NonNullableFormBuilder);
   private cdr = inject(ChangeDetectorRef);
-  private activatedRouter = inject(ActivatedRoute);
+  private activeModal = inject(NgbActiveModal);
 
-  private menuId: number | null = null;
   private csrfToken = '';
   protected errorMessages: BackendFormErrors | null = null;
   protected availableIngredients: Ingredient[] = [];
 
   form = this.fb.group({
-    name: ['takoyaki'],
+    name: ['', Validators.required],
     ingredients: [[] as number[]],
   });
 
   ngOnInit(): void {
     this.menuService.fetchCsrfToken().subscribe((token) => (this.csrfToken = token));
-    this.ingredientService
-      .getIngredients()
-      .subscribe((ingredients) => (this.availableIngredients = ingredients));
+    this.ingredientService.getIngredients().subscribe((ingredients) => {
+      this.availableIngredients = ingredients;
+      this.cdr.markForCheck();
+    });
 
-    this.activatedRouter.paramMap
-      .pipe(
-        switchMap((params) => {
-          const id = params.get('id');
-
-          if (id) {
-            this.menuId = Number(id);
-            return this.menuService.fetch(this.menuId);
-          }
-
-          return of(null);
-        }),
-      )
-      .subscribe((menu) => {
-        if (!menu) {
-          return;
-        }
-
-        const ingredientIds = menu.ingredients.map((ingredient) => ingredient.id);
-
-        this.form.patchValue({
-          name: menu.name,
-          ingredients: ingredientIds,
-        });
-      });
+    if (this.menu) {
+      this.nameForm.patchValue(this.menu.name);
+      this.ingredientsForm.patchValue(
+        this.menu.ingredients.map((i) => i.id).filter((id): id is number => id !== null),
+      );
+    }
   }
 
   onSubmit(): void {
@@ -75,11 +64,22 @@ export class MenuForm implements OnInit {
     }
 
     requestOption.subscribe({
+      next: () => {
+        this.close();
+      },
       error: (error) => {
         this.errorMessages = error.error;
         this.cdr.markForCheck();
       },
     });
+  }
+
+  protected close(): void {
+    this.activeModal.close('close');
+  }
+
+  protected dismiss(): void {
+    this.activeModal.dismiss('dismiss');
   }
 
   private create(): Observable<void> {
@@ -92,19 +92,50 @@ export class MenuForm implements OnInit {
   }
 
   private edit(): Observable<void> {
+    if (!this.menu || this.menu.id === null) {
+      return of();
+    }
+
     const payload = {
       ...this.form.getRawValue(),
       _token: this.csrfToken,
     };
 
-    if (!this.menuId) {
-      return of();
+    return this.menuService.edit(this.menu.id, payload);
+  }
+
+  protected isIngredientSelected(id: number | null): boolean {
+    if (id === null) return false;
+
+    const selectedIds = this.ingredientsForm.value || [];
+    return selectedIds.includes(id);
+  }
+
+  protected toggleIngredient(id: number | null): void {
+    if (id === null) return;
+
+    const current = [...(this.ingredientsForm.value || [])];
+    const index = current.indexOf(id);
+
+    if (index > -1) {
+      current.splice(index, 1);
+    } else {
+      current.push(id);
     }
 
-    return this.menuService.edit(this.menuId, payload);
+    this.ingredientsForm.setValue(current);
+    this.ingredientsForm.markAsDirty();
   }
 
   protected get isEditMode(): boolean {
-    return this.menuId !== null;
+    return this.menu !== null;
+  }
+
+  private get nameForm(): FormControl {
+    return this.form.get('name') as FormControl;
+  }
+
+  private get ingredientsForm(): FormArray {
+    return this.form.get('ingredients') as FormArray;
   }
 }
