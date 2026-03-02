@@ -23,6 +23,7 @@ class AppFixtures extends Fixture
         $files = [
             __DIR__.'/../Fixtures/users.yaml',
             __DIR__.'/../Fixtures/ingredients.yaml',
+            __DIR__.'/../Fixtures/menus.yaml',
         ];
 
         // 読み込みと保存

@@ -1,0 +1,13 @@
+App\Entity\Menu:
+  menu_1:
+    name: "カレー"
+    ingredients: ["@ingredient_1", "@ingredient_2", "@ingredient_3"] # にんじん, たまねぎ, じゃがいも
+  menu_2:
+    name: "肉じゃが"
+    ingredients: ["@ingredient_1", "@ingredient_2", "@ingredient_3"]
+  menu_3:
+    name: "野菜炒め"
+    ingredients: ["@ingredient_1", "@ingredient_2"]
+  menu_{4..10}:
+    name: "テストメニュー <current()>"
+    ingredients: ["@ingredient_*"]
