@@ -56,21 +56,17 @@ export class Home implements OnInit {
   }
 
   private _navigateDate(direction: 1 | -1): void {
-    let step = 1;
-
     switch (this.selectedViewMode) {
       case ViewMode.Day:
-        step = 1;
+        this.baseDate = DateUtil.addDays(this.baseDate, 1 * direction);
         break;
       case ViewMode.Week:
-        step = 7;
+        this.baseDate = DateUtil.addDays(this.baseDate, 7 * direction);
         break;
       case ViewMode.Month:
-        step = 30;
+        this.baseDate = DateUtil.addMonths(this.baseDate, 1 * direction);
         break;
     }
-
-    this.baseDate = DateUtil.addDays(this.baseDate, step * direction);
 
     this.load();
   }
