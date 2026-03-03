@@ -6,6 +6,7 @@ namespace App\Tests\Controller\Api;
 
 use App\Entity\Ingredient;
 use App\Entity\User;
+use App\Tests\DataFixtures\AppFixtures;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Liip\TestFixturesBundle\Services\DatabaseTools\AbstractDatabaseTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -23,10 +24,7 @@ class IngredientControllerTest extends WebTestCase
         $this->databaseTool = self::getContainer()->get(DatabaseToolCollection::class)->get();
 
         // 1. テストデータの初期化 (Userを含む)
-        $this->databaseTool->loadAliceFixture([
-            self::getContainer()->getParameter('kernel.project_dir').'/tests/Fixtures/users.yaml',
-            self::getContainer()->getParameter('kernel.project_dir').'/tests/Fixtures/ingredients.yaml',
-        ]);
+        $this->databaseTool->loadFixtures([AppFixtures::class]);
 
         // 2. テスト用ユーザーを取得してログイン状態にする
         $userRepository = self::getContainer()->get('doctrine')->getRepository(User::class);
