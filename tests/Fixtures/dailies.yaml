@@ -1,0 +1,10 @@
+App\Entity\Daily:
+  daily_1:
+    date: <(new \DateTime("2026-03-01"))>
+    meals: ["@meal_breakfast_1", "@meal_lunch_1", "@meal_dinner_1"]
+  daily_2:
+    date: <(new \DateTime("2026-03-02"))>
+    meals: ["@meal_breakfast_2", "@meal_lunch_2", "@meal_dinner_2"]
+  daily_3:
+    date: <(new \DateTime("2026-03-03"))>
+    meals: ["@meal_breakfast_3", "@meal_lunch_3", "@meal_dinner_3"]

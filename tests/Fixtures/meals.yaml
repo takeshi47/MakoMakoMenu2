@@ -1,0 +1,13 @@
+App\Entity\Meal:
+  meal_breakfast_{1..3}:
+    mealType: "breakfast"
+    menu: ["@menu_*"]
+    sortOrder: 1
+  meal_lunch_{1..3}:
+    mealType: "lunch"
+    menu: ["@menu_*"]
+    sortOrder: 2
+  meal_dinner_{1..3}:
+    mealType: "dinner"
+    menu: ["@menu_*"]
+    sortOrder: 3

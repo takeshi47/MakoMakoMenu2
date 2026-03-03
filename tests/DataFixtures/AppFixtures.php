@@ -24,6 +24,8 @@ class AppFixtures extends Fixture
             __DIR__.'/../Fixtures/users.yaml',
             __DIR__.'/../Fixtures/ingredients.yaml',
             __DIR__.'/../Fixtures/menus.yaml',
+            __DIR__.'/../Fixtures/meals.yaml',
+            __DIR__.'/../Fixtures/dailies.yaml',
         ];
 
         // 読み込みと保存
