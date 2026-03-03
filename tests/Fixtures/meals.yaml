@@ -1,13 +1,42 @@
 App\Entity\Meal:
-  meal_breakfast_{1..3}:
+  # daily_1 (2026-03-01) 用
+  meal_breakfast_1:
+    mealType: "breakfast"
+    menu: ["@menu_1"] # カレー
+    sortOrder: 1
+  meal_lunch_1:
+    mealType: "lunch"
+    menu: ["@menu_2"] # 肉じゃが
+    sortOrder: 2
+  meal_dinner_1:
+    mealType: "dinner"
+    menu: ["@menu_3"] # 野菜炒め
+    sortOrder: 3
+
+  # daily_2 (2026-03-02) 用
+  meal_breakfast_2:
+    mealType: "breakfast"
+    menu: ["@menu_2"] # 肉じゃがを固定
+    sortOrder: 1
+  meal_lunch_2:
+    mealType: "lunch"
+    menu: ["@menu_1"] # カレー
+    sortOrder: 2
+  meal_dinner_2:
+    mealType: "dinner"
+    menu: ["@menu_3"] # 野菜炒め
+    sortOrder: 3
+
+  # その他のデータはランダム
+  meal_breakfast_3:
     mealType: "breakfast"
     menu: ["@menu_*"]
     sortOrder: 1
-  meal_lunch_{1..3}:
+  meal_lunch_3:
     mealType: "lunch"
     menu: ["@menu_*"]
     sortOrder: 2
-  meal_dinner_{1..3}:
+  meal_dinner_3:
     mealType: "dinner"
     menu: ["@menu_*"]
     sortOrder: 3
