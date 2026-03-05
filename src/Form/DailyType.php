@@ -32,6 +32,7 @@ class DailyType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Daily::class,
+            'csrf_token_id' => 'daily_create',
         ]);
     }
 }
