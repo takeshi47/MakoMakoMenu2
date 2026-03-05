@@ -39,6 +39,16 @@
     <div class="card" formArrayName="meals">
       <h3 class="h4 fw-800 mb-3 ps-2">なにをたべる？</h3>
 
+      @if (errorMessages?.['daily']) {
+        <div class="alert alert-danger border-2 mb-4">
+          <ul class="mb-0">
+            @for (msg of errorMessages?.['daily'] | keyvalue; track $index) {
+              <li>{{ msg.value }}</li>
+            }
+          </ul>
+        </div>
+      }
+
       <!-- 各食事を @for でループして描画 -->
       @for (meal of meals.controls; track meal; let i = $index) {
         <div
