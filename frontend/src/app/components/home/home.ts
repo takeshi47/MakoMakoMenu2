@@ -36,7 +36,7 @@ export class Home implements OnInit {
   }
 
   onViewModeChange(): void {
-    this.load(); // データ再ロードのロジックを呼び出す
+    this.load();
   }
 
   private load(): void {
