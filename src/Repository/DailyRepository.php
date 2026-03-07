@@ -8,9 +8,6 @@ use App\Entity\Daily;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Daily>
- */
 class DailyRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -28,7 +25,6 @@ class DailyRepository extends ServiceEntityRepository
         }
 
         return $this->createQueryBuilder('d')
-            // ->where('d.date = :dateList')
             ->where('d.date IN (:dateList)')
             ->setParameter('dateList', $targetDateList)
             ->getQuery()
