@@ -2,16 +2,29 @@
   <!-- Header -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-3 sticky-top">
     <div class="container-fluid">
-      <a class="navbar-brand h1" routerLink="/">
+      <a class="navbar-brand d-flex align-items-center h1 mb-0" routerLink="/">
         <img
           src="images/logo.png"
           alt="MealPlanner"
           width="40"
           height="40"
-          class="d-inline-block align-text-top me-2"
+          class="d-inline-block me-2"
         />
-        MealPlanner</a
-      >
+        <span>MealPlanner</span>
+      </a>
+
+      <div class="d-flex flex-grow-1">
+        <!-- todo: SUPER_ADMINユーザーのみアクセス可能とする -->
+        <!-- <a routerLink="/user/list" class="btn btn-link text-decoration-none text-dark-2"
+          >ユーザーリスト</a
+        > -->
+        <a routerLink="/menu/list" class="btn btn-link text-decoration-none text-dark-2 ms-auto">
+          メニュー一覧
+        </a>
+        <a routerLink="/ingredient/list" class="btn btn-link text-decoration-none text-dark-2">
+          材料一覧
+        </a>
+      </div>
       <button class="btn btn-outline-secondary rounded-circle ms-auto" routerLink="/user/profile">
         <i class="bi bi-person-fill"></i>
       </button>
