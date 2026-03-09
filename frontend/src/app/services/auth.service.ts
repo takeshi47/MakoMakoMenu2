@@ -27,4 +27,13 @@ export class AuthService {
       .post<void>('/api/login', loginData, {})
       .pipe(tap(() => this.router.navigate(['/home'])));
   }
+
+  logout(): void {
+    this.http.get('/logout', { responseType: 'text' }).subscribe({
+      complete: () => {
+        alert('ログアウトしました。');
+        this.router.navigate(['/login']);
+      },
+    });
+  }
 }

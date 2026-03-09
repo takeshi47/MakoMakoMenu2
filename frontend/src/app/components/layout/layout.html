@@ -25,8 +25,14 @@
           材料一覧
         </a>
       </div>
-      <button class="btn btn-outline-secondary rounded-circle ms-auto" routerLink="/user/profile">
+      <button
+        class="btn btn-outline-secondary rounded-circle ms-auto me-2"
+        routerLink="/user/profile"
+        title="プロフィール">
         <i class="bi bi-person-fill"></i>
+      </button>
+      <button class="btn btn-outline-danger rounded-circle" (click)="logout()" title="ログアウト">
+        <i class="bi bi-box-arrow-right"></i>
       </button>
     </div>
   </nav>
