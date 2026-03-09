@@ -1,6 +1,4 @@
 describe('献立登録フォーム：異常系・制約テスト', () => {
-  let csrfToken: string;
-
   before(() => {
     // フィクスチャのロード
     cy.exec('php ../bin/console doctrine:fixtures:load --no-interaction --env=test');
@@ -17,15 +15,12 @@ describe('献立登録フォーム：異常系・制約テスト', () => {
 
     // ログイン処理
     cy.visit('/login');
-    cy.get('input[formControlName="email"]').type('admin@example.com');
-    cy.get('input[formControlName="password"]').type('password');
-    cy.get('button[type="submit"]').should('not.be.disabled').click();
-    cy.wait('@loginRequest');
 
-    // CSRFトークンをAPIテスト用に取得しておく
-    cy.request('GET', '/api/daily/csrf-token/daily_create').then((response) => {
-      csrfToken = response.body.token;
-    });
+    cy.get('input[formControlName="email"]').clear().type('admin@example.com');
+    cy.get('input[formControlName="password"]').clear().type('password');
+    cy.get('button[type="submit"]').should('not.be.disabled').click();
+
+    cy.wait('@loginRequest');
 
     cy.visit('/home');
     cy.wait('@fetchDaily');

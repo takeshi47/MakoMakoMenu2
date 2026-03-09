@@ -12,8 +12,8 @@ describe('材料フォームのテスト', () => {
 
     // ログイン処理
     cy.visit('/login');
-    cy.get('input[formControlName="email"]').type('admin@example.com');
-    cy.get('input[formControlName="password"]').type('password');
+    cy.get('input[formControlName="email"]').clear().type('admin@example.com');
+    cy.get('input[formControlName="password"]').clear().type('password');
     cy.get('button[type="submit"]').click();
 
     // ホーム画面遷移確認
