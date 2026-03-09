@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { UserDetail } from './user-detail';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 
 describe('UserDetail', () => {
   let component: UserDetail;
@@ -8,7 +10,12 @@ describe('UserDetail', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UserDetail]
+      imports: [UserDetail],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+      ]
     })
     .compileComponents();
 
@@ -17,7 +24,11 @@ describe('UserDetail', () => {
     await fixture.whenStable();
   });
 
-  it('should create', () => {
+  it('コンポーネントが作成されること', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('deleteUserメソッドを持っていること', () => {
+    expect(component['deleteUser']).toBeDefined();
   });
 });

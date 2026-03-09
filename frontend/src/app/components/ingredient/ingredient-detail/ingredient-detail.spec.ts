@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { IngredientDetail } from './ingredient-detail';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 
 describe('IngredientDetail', () => {
   let component: IngredientDetail;
@@ -8,16 +10,25 @@ describe('IngredientDetail', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [IngredientDetail]
+      imports: [IngredientDetail],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+      ]
     })
     .compileComponents();
 
     fixture = TestBed.createComponent(IngredientDetail);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('コンポーネントが作成されること', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('deleteメソッドを持っていること', () => {
+    expect(component['delete']).toBeDefined();
   });
 });

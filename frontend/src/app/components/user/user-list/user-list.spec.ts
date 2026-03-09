@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { UserList } from './user-list';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 
 describe('UserList', () => {
   let component: UserList;
@@ -8,7 +10,12 @@ describe('UserList', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UserList]
+      imports: [UserList],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+      ]
     })
     .compileComponents();
 
@@ -17,7 +24,12 @@ describe('UserList', () => {
     await fixture.whenStable();
   });
 
-  it('should create', () => {
+  it('コンポーネントが作成されること', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('ngOnInit で users$ が初期化されること', () => {
+    component.ngOnInit();
+    expect(component.users$).toBeDefined();
   });
 });
