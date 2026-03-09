@@ -1,0 +1,63 @@
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">プロフィール</h2>
+        <a routerLink="/home" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i>戻る
+        </a>
+      </div>
+
+      @if (user$ | async; as user) {
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4">
+            <div class="text-center mb-4">
+              <div
+                class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                style="width: 80px; height: 80px"
+              >
+                <i class="bi bi-person-fill text-secondary fs-1"></i>
+              </div>
+              <h4 class="fw-bold">{{ user.displayName || 'ユーザー名未設定' }}</h4>
+              <p class="text-muted">{{ user.email }}</p>
+            </div>
+
+            <hr class="my-4" />
+
+            <div class="row mb-3">
+              <div class="col-sm-4 text-muted">ユーザーID</div>
+              <div class="col-sm-8 fw-medium">{{ user.id }}</div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-sm-4 text-muted">権限</div>
+              <div class="col-sm-8">
+                <span class="badge bg-info text-dark">{{ user.role }}</span>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-sm-4 text-muted">最終ログイン</div>
+              <div class="col-sm-8 fw-medium">
+                {{ user.lastLoggedInAt ? (user.lastLoggedInAt | date: 'yyyy/MM/dd HH:mm') : '-' }}
+              </div>
+            </div>
+
+            <div class="mt-4 d-grid">
+              <i class="bi bi-pencil-square me-1"></i>todo: プロフィールを編集
+              <!-- <a [routerLink]="['/user/edit', user.id]" class="btn btn-primary">
+              </a> -->
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2 text-muted">読み込み中...</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>

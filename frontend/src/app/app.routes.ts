@@ -4,6 +4,7 @@ import { Home } from './components/home/home';
 import { UserList } from './components/user/user-list/user-list';
 import { UserForm } from './components/user/user-form/user-form';
 import { UserDetail } from './components/user/user-detail/user-detail';
+import { UserProfile } from './components/user/user-profile/user-profile';
 import { IngredientForm } from './components/ingredient/ingredient-form/ingredient-form';
 import { IngredientList } from './components/ingredient/ingredient-list/ingredient-list';
 import { IngredientDetail } from './components/ingredient/ingredient-detail/ingredient-detail';
@@ -21,6 +22,7 @@ export const routes: Routes = [
     children: [
       { path: 'home', component: Home },
       { path: 'user/list', component: UserList },
+      { path: 'user/profile', component: UserProfile },
       { path: 'user/create', component: UserForm },
       { path: 'user/:id', component: UserDetail },
       { path: 'user/edit/:id', component: UserForm },
