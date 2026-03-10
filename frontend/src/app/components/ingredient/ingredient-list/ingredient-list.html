@@ -28,6 +28,7 @@
               [ingredient]="ingredient"
               [csrfToken]="csrfToken"
               (enableEdit)="enableEdit($event)"
+              (completeDelete)="load()"
             ></tr>
           }
         } @empty {

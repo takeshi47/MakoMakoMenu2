@@ -27,8 +27,6 @@ export class MenuList implements OnInit {
   }
 
   private loadMenus(): void {
-    console.log('loadMenus');
-
     this.menus$ = this.menuService.fetchAll().pipe(
       catchError((err) => {
         console.error(err);
