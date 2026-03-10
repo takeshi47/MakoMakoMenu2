@@ -12,7 +12,7 @@ import { IngredientService } from '../../../services/ingredient-service';
 })
 export class IngredientListItem {
   @Input() ingredient!: Ingredient;
-  @Input({ required: true }) csrfToken = '';
+  @Input({ required: true }) csrfToken!: string;
   @Output() completeDelete: EventEmitter<void> = new EventEmitter<void>();
   @Output() enableEdit: EventEmitter<number> = new EventEmitter<number>();
 
@@ -21,11 +21,13 @@ export class IngredientListItem {
   delete(id: number): void {
     this.ingredientService.delete(id, this.csrfToken).subscribe({
       next: () => {
-        confirm('delete completed');
+        // todo: alertをUI通知に変更
+        alert('delete completed');
         this.completeDelete.emit();
       },
       error: (error) => {
         console.error(error);
+        // todo: alertをUI通知に変更
         alert(error.error);
       },
     });
