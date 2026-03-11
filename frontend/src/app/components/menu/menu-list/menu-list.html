@@ -24,7 +24,9 @@
                   <button class="btn btn-outline-secondary" (click)="openMenuForm(menu)">
                     編集
                   </button>
-                  <button class="btn btn-outline-danger" (click)="onDelete(menu.id)">削除</button>
+                  @if (menu.canDelete) {
+                    <button class="btn btn-outline-danger" (click)="onDelete(menu.id)">削除</button>
+                  }
                 </div>
               </td>
             </tr>
