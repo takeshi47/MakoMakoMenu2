@@ -52,6 +52,45 @@ describe('DailyFormComponent', () => {
     expect(component.meals.length).toBe(initialCount + 1);
   });
 
+  describe('Validation', () => {
+    it('必須項目（日付）が未入力の場合、フォームが不当（invalid）であること', () => {
+      component['form'].get('date')?.setValue('');
+      expect(component['form'].valid).toBeFalse();
+    });
+
+    it('必須項目（食事タイプ）が未選択の場合、フォームが不当（invalid）であること', () => {
+      const firstMeal = component.meals.at(0);
+      firstMeal.get('mealType')?.setValue(null);
+      expect(component['form'].valid).toBeFalse();
+    });
+
+    it('必須項目（メニュー）が未選択の場合、フォームが不当（invalid）であること', () => {
+      const firstMeal = component.meals.at(0);
+      const menuArray = firstMeal.get('menu') as FormArray;
+      menuArray.at(0).setValue(null);
+      expect(component['form'].valid).toBeFalse();
+    });
+
+    it('フォームが不当（invalid）な場合、決定ボタンが非活性であること', () => {
+      component['form'].get('date')?.setValue('');
+      fixture.detectChanges();
+      const submitBtn = fixture.nativeElement.querySelector('button[type="submit"]');
+      expect(submitBtn.disabled).toBeTrue();
+    });
+
+    it('すべての必須項目が入力されている場合、決定ボタンが活性であること', () => {
+      component['form'].get('date')?.setValue('2023-10-01');
+      const firstMeal = component.meals.at(0);
+      firstMeal.get('mealType')?.setValue('breakfast');
+      const menuArray = firstMeal.get('menu') as FormArray;
+      menuArray.at(0).setValue(1);
+      fixture.detectChanges();
+
+      const submitBtn = fixture.nativeElement.querySelector('button[type="submit"]');
+      expect(submitBtn.disabled).toBeFalse();
+    });
+  });
+
   it('フォームが不正な状態で onSubmit が呼ばれた場合、アラートが表示されること', () => {
     spyOn(window, 'alert');
     component['form'].get('date')?.setValue('');

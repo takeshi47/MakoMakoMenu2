@@ -35,6 +35,37 @@ describe('IngredientForm', () => {
     expect(component.form.get('isStock')?.value).toBe(false);
   });
 
+  describe('Validation', () => {
+    it('名前が空の場合はフォームが不当（invalid）であること', () => {
+      const nameControl = component.form.get('name');
+      nameControl?.setValue('');
+      expect(nameControl?.valid).toBeFalse();
+      expect(nameControl?.errors?.['required']).toBeTruthy();
+    });
+
+    it('名前が30文字以下の場合はフォームが正当（valid）であること', () => {
+      const nameControl = component.form.get('name');
+      nameControl?.setValue('a'.repeat(30));
+      expect(nameControl?.valid).toBeTrue();
+    });
+
+    it('名前が31文字以上の場合はフォームが不当（invalid）であること', () => {
+      const nameControl = component.form.get('name');
+      nameControl?.setValue('a'.repeat(31));
+      expect(nameControl?.valid).toBeFalse();
+      expect(nameControl?.errors?.['maxlength']).toBeTruthy();
+    });
+
+    it('フォームが不当（invalid）な場合は保存ボタンが非活性であること', () => {
+      const nameControl = component.form.get('name');
+      nameControl?.setValue('');
+      fixture.detectChanges();
+
+      const submitBtn = fixture.nativeElement.querySelector('button[type="submit"]');
+      expect(submitBtn.disabled).toBeTrue();
+    });
+  });
+
   it('サーバーエラー時に errorMessages が表示されること', () => {
     const ingredientService = TestBed.inject(IngredientService);
     const mockError = { error: { name: ['すでに存在します'] } };
