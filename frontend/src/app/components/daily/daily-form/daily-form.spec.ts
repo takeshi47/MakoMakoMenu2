@@ -32,14 +32,15 @@ describe('DailyFormComponent', () => {
 
     fixture = TestBed.createComponent(DailyFormComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('コンポーネントが作成されること', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('initForm() がデフォルト値でフォームを初期化すること', () => {
+    fixture.detectChanges();
     expect(component['form']).toBeDefined();
     expect(component['form'].get('date')).toBeDefined();
     expect(component.meals).toBeDefined();
@@ -47,6 +48,7 @@ describe('DailyFormComponent', () => {
   });
 
   it('addMeal() で食事フォームが追加されること', () => {
+    fixture.detectChanges();
     const initialCount = component.meals.length;
     component.addMeal();
     expect(component.meals.length).toBe(initialCount + 1);
@@ -54,17 +56,20 @@ describe('DailyFormComponent', () => {
 
   describe('Validation', () => {
     it('必須項目（日付）が未入力の場合、フォームが不当（invalid）であること', () => {
+      fixture.detectChanges();
       component['form'].get('date')?.setValue('');
       expect(component['form'].valid).toBeFalse();
     });
 
     it('必須項目（食事タイプ）が未選択の場合、フォームが不当（invalid）であること', () => {
+      fixture.detectChanges();
       const firstMeal = component.meals.at(0);
       firstMeal.get('mealType')?.setValue(null);
       expect(component['form'].valid).toBeFalse();
     });
 
     it('必須項目（メニュー）が未選択の場合、フォームが不当（invalid）であること', () => {
+      fixture.detectChanges();
       const firstMeal = component.meals.at(0);
       const menuArray = firstMeal.get('menu') as FormArray;
       menuArray.at(0).setValue(null);
@@ -72,6 +77,7 @@ describe('DailyFormComponent', () => {
     });
 
     it('フォームが不当（invalid）な場合、決定ボタンが非活性であること', () => {
+      fixture.detectChanges();
       component['form'].get('date')?.setValue('');
       fixture.detectChanges();
       const submitBtn = fixture.nativeElement.querySelector('button[type="submit"]');
@@ -79,6 +85,7 @@ describe('DailyFormComponent', () => {
     });
 
     it('すべての必須項目が入力されている場合、決定ボタンが活性であること', () => {
+      fixture.detectChanges();
       component['form'].get('date')?.setValue('2023-10-01');
       const firstMeal = component.meals.at(0);
       firstMeal.get('mealType')?.setValue('breakfast');
@@ -92,6 +99,7 @@ describe('DailyFormComponent', () => {
   });
 
   it('フォームが不正な状態で onSubmit が呼ばれた場合、アラートが表示されること', () => {
+    fixture.detectChanges();
     spyOn(window, 'alert');
     component['form'].get('date')?.setValue('');
     component.onSubmit();
@@ -99,6 +107,7 @@ describe('DailyFormComponent', () => {
   });
 
   it('サーバーエラー時に errorMessages が表示されること', () => {
+    fixture.detectChanges();
     const dailyService = TestBed.inject(DailyService);
     const mockError = { error: { date: { error: '無効な日付です' } } };
     spyOn(dailyService, 'create').and.returnValue(

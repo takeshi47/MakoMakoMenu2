@@ -33,4 +33,12 @@ describe('IngredientList', () => {
     component.ngOnInit();
     expect(component['ingredients']).toBeDefined();
   });
+
+  it('食材が0件の時に適切なメッセージが表示されること', () => {
+    component['ingredients'] = [];
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('材料が登録されてないよ');
+  });
 });

@@ -33,6 +33,26 @@ describe('IngredientListItem', () => {
     expect(compiled.textContent).toContain('Tomato');
   });
 
+  describe('在庫バッジの表示', () => {
+    it('isStock が true の時、"あり"バッジが bg-success クラスで表示されること', () => {
+      component.ingredient.isStock = true;
+      fixture.detectChanges();
+
+      const badge = fixture.nativeElement.querySelector('.badge');
+      expect(badge.textContent).toContain('あり');
+      expect(badge.classList).toContain('bg-success');
+    });
+
+    it('isStock が false の時、"なし"バッジが bg-secondary クラスで表示されること', () => {
+      component.ingredient.isStock = false;
+      fixture.detectChanges();
+
+      const badge = fixture.nativeElement.querySelector('.badge');
+      expect(badge.textContent).toContain('なし');
+      expect(badge.classList).toContain('bg-secondary');
+    });
+  });
+
   it('canDelete が false の時、削除ボタンが表示されないこと', () => {
     component.ingredient.canDelete = false;
 
