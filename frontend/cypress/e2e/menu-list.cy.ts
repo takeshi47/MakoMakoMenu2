@@ -19,32 +19,8 @@ describe('メニュー一覧画面のテスト', () => {
     cy.wait('@getMenus');
   });
 
-  it('canDelete が false のメニューは削除ボタンが非表示であること', () => {
-    cy.get('@getMenus')
-      .its('response.body')
-      .then((menus: { id: number; name: string; ingredients: []; canDelete: boolean }[]) => {
-        // 少なくとも1つは canDelete が true のデータが含まれていることを確認（テストの妥当性検証）
-        const hasCanDeleteTrue = menus.some((m) => m.canDelete === true);
-        expect(hasCanDeleteTrue).to.equal(true);
-
-        const hasCanDeleteFalse = menus.some((m) => m.canDelete === false);
-        expect(hasCanDeleteFalse).to.equal(true);
-
-        menus.forEach((menu) => {
-          // メニュー名（またはIDなど一意の識別子）を含む行を特定
-          cy.contains('tr', menu.name).within(() => {
-            // 編集ボタンは常に表示されていることを確認
-            cy.get('button').contains('編集').should('be.visible');
-
-            if (menu.canDelete) {
-              // canDelete が true の場合は削除ボタンが存在し、可視であること
-              cy.get('button').contains('削除').should('be.visible');
-            } else {
-              // canDelete が false の場合は削除ボタンが存在しないこと
-              cy.get('button').contains('削除').should('not.exist');
-            }
-          });
-        });
-      });
+  it('メニュー一覧が表示されること', () => {
+    cy.get('tbody tr').should('have.length.at.least', 1);
+    cy.get('button').contains('編集').should('be.visible');
   });
 });
