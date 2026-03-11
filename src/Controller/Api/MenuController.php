@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controller\Api;
 
 use App\Entity\Menu;
+use App\Exception\MenuInUseException;
 use App\Form\MenuType;
 use App\Repository\MenuRepository;
+use App\UseCase\MenuDeleteUseCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,7 +69,7 @@ final class MenuController extends AbstractController
     }
 
     #[Route(path: '/delete/{id}', name: 'delete', methods: ['DELETE'])]
-    public function delete(Request $request, Menu $menu, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Menu $menu, MenuDeleteUseCase $deleteUseCase): Response
     {
         $submittedToken = $request->headers->get('X-CSRF-TOKEN');
 
@@ -75,8 +77,11 @@ final class MenuController extends AbstractController
             return $this->json(['error' => 'Invalid CSRF TOKEN'], Response::HTTP_BAD_REQUEST);
         }
 
-        $entityManager->remove($menu);
-        $entityManager->flush();
+        try {
+            $deleteUseCase->delete($menu);
+        } catch (MenuInUseException $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
 
         return new Response();
     }
