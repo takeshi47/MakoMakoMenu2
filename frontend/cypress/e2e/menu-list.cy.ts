@@ -2,10 +2,8 @@ describe('メニュー一覧画面のテスト', () => {
   beforeEach(() => {
     // APIリクエストの監視とモック
     cy.intercept('POST', '**/api/login').as('loginRequest');
-    cy.intercept('GET', '**/api/menu', [
-      { id: 1, name: 'カレー', ingredients: [], canDelete: false },
-      { id: 2, name: 'サラダ', ingredients: [], canDelete: true },
-    ]).as('getMenus');
+    cy.intercept('GET', '**/api/menu').as('getMenus');
+
     cy.intercept('GET', '**/api/menu/csrf-token/menu_delete', { token: 'mock-token' }).as(
       'getCsrfToken',
     );
@@ -25,7 +23,6 @@ describe('メニュー一覧画面のテスト', () => {
     cy.get('@getMenus')
       .its('response.body')
       .then((menus: { id: number; name: string; ingredients: []; canDelete: boolean }[]) => {
-
         // 少なくとも1つは canDelete が true のデータが含まれていることを確認（テストの妥当性検証）
         const hasCanDeleteTrue = menus.some((m) => m.canDelete === true);
         expect(hasCanDeleteTrue).to.equal(true);

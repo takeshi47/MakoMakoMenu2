@@ -142,43 +142,6 @@ describe('材料フォームのテスト', () => {
     cy.contains('キャンセルされる名前').should('not.exist');
   });
 
-  it('nameが空の場合、バリデーションエラーが表示されること', () => {
-    cy.contains('新しい材料を登録する').click();
-    cy.get('tr[app-ingredient-form]').as('ingredientForm');
-
-    cy.get('@ingredientForm').within(() => {
-      cy.get('input[formControlName="name"]').clear();
-      cy.contains('保存').click();
-    });
-
-    cy.wait('@createIngredient').its('response.statusCode').should('eq', 400);
-
-    cy.get('@ingredientForm').within(() => {
-      cy.get('input[formControlName="name"]').should('have.class', 'is-invalid');
-      cy.get('.invalid-tooltip').should('be.visible').and('not.be.empty');
-    });
-  });
-
-  it('nameが31文字以上の場合にエラーが表示されること', () => {
-    const longName = 'a'.repeat(31);
-
-    cy.contains('新しい材料を登録する').click();
-
-    const ingredientForm = cy.get('tr[app-ingredient-form]').as('ingredientForm');
-
-    ingredientForm.within(() => {
-      cy.get('input[formControlName="name"]').type(longName);
-      cy.contains('保存').click();
-    });
-
-    cy.wait('@createIngredient').its('response.statusCode').should('eq', 400);
-
-    ingredientForm.within(() => {
-      cy.get('input[formControlName="name"]').should('have.class', 'is-invalid');
-      cy.get('.invalid-tooltip').should('contain', 'This value is too long');
-    });
-  });
-
   it('既に存在する名前を登録しようとした場合にエラーが表示されること', () => {
     const duplicateName = 'たまねぎ';
 

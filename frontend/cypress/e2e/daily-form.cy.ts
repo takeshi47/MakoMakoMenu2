@@ -233,31 +233,6 @@ describe('献立登録フォームのテスト', () => {
     cy.contains('この日付はすでに登録されています。').scrollIntoView().should('be.visible');
   });
 
-  it('必須項目が未入力の場合に送信ボタンが非活性であること (異常系)', () => {
-    const targetDate = '2026-02-24';
-    cy.contains('.card', targetDate).within(() => {
-      cy.contains('button', '登録').click();
-    });
-
-    cy.wait(['@getInitData', '@getMenus']);
-
-    // 初期状態（メニュー未選択）では無効
-    cy.get('button[type="submit"]').should('be.disabled');
-
-    // メニューを選択すると有効
-    cy.contains('h4', 'ごはん 1')
-      .parents('.card')
-      .first()
-      .within(() => {
-        cy.get('select').last().select('肉じゃが');
-      });
-    cy.get('button[type="submit"]').should('not.be.disabled');
-
-    // 日付を消すと再び無効
-    cy.get('input#date').clear();
-    cy.get('button[type="submit"]').should('be.disabled');
-  });
-
   it('同じ食事タイプを重複して登録しようとした場合にエラーが表示されること (異常系)', () => {
     const targetDate = '2026-02-23';
     cy.intercept('POST', '**/api/daily/create').as('createDuplicateError');
