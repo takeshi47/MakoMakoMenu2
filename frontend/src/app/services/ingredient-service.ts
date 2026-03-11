@@ -29,7 +29,7 @@ export class IngredientService {
 
   delete(id: number, token: string): Observable<void> {
     const headers = new HttpHeaders({
-      'X-CSRF_TOKEN': token,
+      'X-CSRF-TOKEN': token,
     });
     return this.http.delete<void>(`${this.baseUrl}/delete/${id}`, { headers: headers });
   }

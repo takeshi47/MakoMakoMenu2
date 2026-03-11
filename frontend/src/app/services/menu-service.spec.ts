@@ -77,7 +77,7 @@ describe('MenuService', () => {
 
     const req = httpMock.expectOne('/api/menu/delete/1');
     expect(req.request.method).toBe('DELETE');
-    expect(req.request.headers.get('X-CSRF_TOKEN')).toBe(token);
+    expect(req.request.headers.get('X-CSRF-TOKEN')).toBe(token);
     req.flush(null);
   });
 
