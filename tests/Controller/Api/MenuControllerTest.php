@@ -144,15 +144,49 @@ class MenuControllerTest extends WebTestCase
     }
 
     /**
-     * 削除 (DELETE /api/menu/delete/{id}) のテスト.
+     * Mealに紐づいているMenuは削除不可であることをテスト.
      */
-    public function testDelete(): void
+    public function testDeleteLinkedMenuFails(): void
     {
         $repo = self::getContainer()->get('doctrine')->getRepository(Menu::class);
-        $menu = $repo->findOneBy(['name' => '野菜炒め']);
+        // "カレー" は meals.yaml で meal_breakfast_1 に紐付いている
+        $menu = $repo->findOneBy(['name' => 'カレー']);
         $id = $menu->getId();
 
-        // CSRFトークンの取得 (deleteはmenu_deleteを使用)
+        // CSRFトークンの取得
+        $this->client->request('GET', '/api/menu/csrf-token/menu_delete');
+        $csrfToken = json_decode($this->client->getResponse()->getContent(), true)['token'];
+
+        $this->client->request(
+            'DELETE',
+            "/api/menu/delete/$id",
+            [],
+            [],
+            ['HTTP_X-CSRF-TOKEN' => $csrfToken]
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+
+        $responseContent = $this->client->getResponse()->getContent();
+        $this->assertJson($responseContent);
+
+        $data = json_decode($responseContent, true);
+        $this->assertSame('このメニューは食事に使用されているため削除できません。', $data['error']);
+
+        // データベースから消えていないことを確認
+        self::getContainer()->get('doctrine')->getManager()->clear();
+        $this->assertNotNull($repo->find($id));
+    }
+
+    /**
+     * Mealに紐づいていないMenuは削除可能であることをテスト.
+     */
+    public function testDeleteUnlinkedMenuSucceeds(): void
+    {
+        $repo = self::getContainer()->get('doctrine')->getRepository(Menu::class);
+        $menu = $repo->findOneBy(['name' => '削除用メニュー']);
+        $id = $menu->getId();
+
         $this->client->request('GET', '/api/menu/csrf-token/menu_delete');
         $csrfToken = json_decode($this->client->getResponse()->getContent(), true)['token'];
 
