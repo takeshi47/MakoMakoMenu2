@@ -72,13 +72,24 @@
             "@fix",
             "@stan"
         ],
-        "e2e": [
+        "frontend:build": "cd frontend && yarn build:dev",
+        "e2e:prepare": [
             "symfony server:stop",
             "APP_ENV=test symfony serve -d",
             "php bin/console c:c --env=test",
             "php bin/console doctrine:schema:update --env=test --force",
-            "php bin/console doctrine:fixtures:load --env=test --no-interaction",
-            "cd frontend && yarn build:dev && yarn cypress open"
+            "php bin/console doctrine:fixtures:load --env=test --no-interaction"
+        ],
+        "e2e": [
+            "@e2e:prepare",
+            "@frontend:build",
+            "cd frontend && yarn cypress open"
+        ],
+        "e2e:ci": [
+            "@e2e:prepare",
+            "@frontend:build",
+            "cd frontend && yarn cypress run",
+            "symfony server:stop"
         ]
     },
     "conflict": {
