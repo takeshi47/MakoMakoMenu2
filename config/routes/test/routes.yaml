@@ -1,0 +1,4 @@
+api_test_database_reset:
+  path: /api/test/database-reset
+  controller: App\Controller\Api\Test\DatabaseResetController
+  methods: [POST]
