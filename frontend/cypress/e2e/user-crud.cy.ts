@@ -1,20 +1,11 @@
 describe('ユーザー管理のCRUDテスト', () => {
   beforeEach(() => {
-    // データベースのリセット
-    cy.request('POST', '/api/test/database-reset');
-    cy.on('window:confirm', () => true);
-
-    cy.clearCookies();
-    cy.clearLocalStorage();
-
     // APIの監視 (エイリアス設定のみ)
-    cy.intercept('POST', '**/api/login').as('loginRequest');
     cy.intercept('GET', '**/api/user').as('getUsers');
     cy.intercept('POST', '**/api/user/new').as('createUser');
     cy.intercept('GET', '**/api/user/*').as('getUserDetail');
     cy.intercept('POST', '**/api/user/*').as('updateUser');
     cy.intercept('DELETE', '**/api/user/*').as('deleteUser');
-    cy.intercept('GET', '**/api/user/csrf-token/*').as('getCsrfToken');
 
     cy.login();
     cy.visit('/user/list');
@@ -76,18 +67,21 @@ describe('ユーザー管理のCRUDテスト', () => {
 
     cy.visit('/user/list');
 
-    cy.intercept('GET', '**/api/user/csrf-token/user_delete_*').as('tokenRequest');
+    // 詳細画面遷移前に、そのユーザーに対するリクエストを監視
+    cy.intercept('GET', '**/api/user/*').as('getUser');
+    cy.intercept('GET', '**/api/user/csrf-token/user_delete_*').as('getCsrfTokenDetail');
 
     cy.contains('a', deleteTargetEmail).click();
+    cy.url().should('match', /\/user\/\d+$/);
     cy.contains('user-detail works!', { matchCase: false }).should('be.visible');
 
+    // 詳細データとトークンの取得を待機
+    cy.wait(['@getUser', '@getCsrfTokenDetail'], { timeout: 10000 });
     cy.get('pre').should('contain', deleteTargetEmail);
 
-    cy.wait('@tokenRequest');
-    cy.contains('button', /delete/i).click();
-
+    // 削除ボタンが活性化されることを確認してクリック
+    cy.get('button').contains('delete').should('not.be.disabled').click();
     cy.wait('@deleteUser').its('response.statusCode').should('eq', 200);
-
     cy.url().should('include', '/user/list');
     cy.contains(deleteTargetEmail).should('not.exist');
   });
