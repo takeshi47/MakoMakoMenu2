@@ -5,11 +5,12 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { UserService } from '../../../services/user-service';
 import { Observable, of, Subscriber } from 'rxjs';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 
 describe('UserForm', () => {
   let component: UserForm;
   let fixture: ComponentFixture<UserForm>;
+  const errorMessageClass = '.is-invalid';
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -102,7 +103,7 @@ describe('UserForm', () => {
     });
   });
 
-  fdescribe('バリデーションテスト', () => {
+  describe('バリデーションテスト', () => {
     it('email が空の場合、required エラーになること', () => {
       const email = component.form.get('email');
       email?.setValue('');
@@ -111,19 +112,155 @@ describe('UserForm', () => {
     });
 
     it('email に不正な形式を入力した場合、email エラーになること', () => {
-      // TODO: 実装
+      const emailForm = component.form.get('email');
+
+      emailForm?.setValue('invalid-email');
+      emailForm?.markAsTouched();
+      fixture.detectChanges();
+
+      expect(emailForm?.invalid).toBeTrue();
+      expect(emailForm?.errors?.['email']).toBeTruthy();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      let errorMessage = compiled.querySelector(errorMessageClass);
+      expect(errorMessage).toBeTruthy();
+      expect(errorMessage?.textContent).toContain('メールアドレスの形式で入力してね！');
+
+      emailForm?.setValue('test@example.com');
+      fixture.detectChanges();
+
+      expect(emailForm?.valid);
+      expect(emailForm?.errors).toBeNull();
+
+      errorMessage = compiled.querySelector(errorMessageClass);
+      expect(errorMessage).toBeFalsy();
     });
 
     it('パスワード（first）が空の場合、required エラーになること', () => {
-      // TODO: 実装
+      const passwordForm = component.form.get('plainPassword.first') as FormControl;
+
+      passwordForm?.setValue('');
+      passwordForm?.markAsTouched();
+
+      fixture.detectChanges();
+
+      expect(passwordForm?.invalid).toBeTrue();
+      expect(passwordForm?.errors?.['required']).toBeTruthy();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      let errorMessage = compiled.querySelector(errorMessageClass);
+
+      expect(errorMessage).toBeTruthy();
+      expect(errorMessage?.textContent).toContain('パスワードは必須だよ');
+
+      passwordForm?.setValue('password123');
+      fixture.detectChanges();
+
+      errorMessage = compiled.querySelector(errorMessageClass);
+
+      expect(errorMessage).toBeFalsy();
+    });
+
+    it('パスワードが8文字未満の場合、minLength エラーになること', () => {
+      const passwordForm = component.form.get('plainPassword.first') as FormControl;
+
+      passwordForm?.setValue('1234567');
+      passwordForm?.markAsTouched();
+      fixture.detectChanges();
+
+      expect(passwordForm?.errors?.['minlength']).toBeTruthy();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      let errorMessage = compiled.querySelector(errorMessageClass);
+
+      expect(errorMessage).toBeTruthy();
+      expect(errorMessage?.textContent).toContain('パスワードは8文字以上で入力してね！');
+
+      passwordForm?.setValue('12345678');
+      fixture.detectChanges();
+      expect(passwordForm?.valid).toBeTrue();
+
+      errorMessage = compiled.querySelector(errorMessageClass);
+      expect(errorMessage).toBeFalsy();
+    });
+
+    it('パスワードが17文字以上の場合、maxLength エラーになること', () => {
+      const passwordForm = component.form.get('plainPassword.first') as FormControl;
+
+      passwordForm?.setValue('1234567890' + '12345667890');
+      passwordForm?.markAsTouched();
+      fixture.detectChanges();
+
+      expect(passwordForm?.errors?.['maxlength']).toBeTruthy();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      let errorMessage = compiled.querySelector(errorMessageClass);
+
+      expect(errorMessage).toBeTruthy();
+      expect(errorMessage?.textContent).toContain('パスワードは17文字以下で入力してね！');
+
+      passwordForm?.setValue('12345678');
+      fixture.detectChanges();
+      expect(passwordForm?.valid).toBeTrue();
+
+      errorMessage = compiled.querySelector(errorMessageClass);
+      expect(errorMessage).toBeFalsy();
     });
 
     it('パスワード（first）と確認用（second）が一致しない場合、フォーム全体が不正になること', () => {
-      // TODO: 実装
+      const firstPassword = 'first1234';
+      const secondPassword = 'second1234';
+
+      const form = component.form as FormGroup;
+      const passwordFirstForm = form.get('plainPassword.first') as FormControl;
+      const passwordSecondForm = form.get('plainPassword.second') as FormControl;
+
+      passwordFirstForm.setValue(firstPassword);
+      passwordSecondForm.setValue(secondPassword);
+      passwordFirstForm.markAsTouched();
+      fixture.detectChanges();
+
+      expect(form.get('plainPassword')?.errors?.['passwordsMismatch']).toBeTruthy();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      let errorMessage = compiled.querySelector(errorMessageClass);
+
+      expect(errorMessage).toBeTruthy();
+      expect(errorMessage?.textContent).toContain('パスワードが一致してないよ');
+
+      passwordSecondForm.setValue(firstPassword);
+      fixture.detectChanges();
+
+      expect(form.get('plainPassword')?.errors).toBeFalsy();
+      expect(form.get('plainPassword')?.valid).toBeTrue();
+
+      errorMessage = compiled.querySelector(errorMessageClass);
+      expect(errorMessage).toBeFalsy();
     });
 
     it('role が選択されていない場合、required エラーになること', () => {
-      // TODO: 実装
+      const roleForm = component.form.get('role');
+
+      roleForm?.setValue('');
+      roleForm?.markAsTouched();
+      fixture.detectChanges();
+
+      expect(roleForm?.invalid).toBeTrue();
+      expect(roleForm?.errors?.['required']).toBeTruthy();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      let errorMessage = compiled.querySelector(errorMessageClass);
+      expect(errorMessage).toBeTruthy();
+      expect(errorMessage?.textContent).toContain('権限を選んでね！');
+
+      roleForm?.setValue('ROLE_USER');
+      fixture.detectChanges();
+
+      expect(roleForm?.valid).toBeTrue();
+      expect(roleForm?.events).toBeFalsy();
+
+      errorMessage = compiled.querySelector(errorMessageClass);
+      expect(errorMessage).toBeFalsy();
     });
   });
 
