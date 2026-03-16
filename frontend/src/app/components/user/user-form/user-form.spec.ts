@@ -4,8 +4,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
 import { UserService } from '../../../services/user-service';
-import { of, throwError } from 'rxjs';
-import { FormControl } from '@angular/forms';
+import { of, Subject, throwError } from 'rxjs';
+import { FormControl, FormGroup } from '@angular/forms';
 
 /**
  * 要素が DOM 上に存在し、かつ display: none でないことを確認する
@@ -299,7 +299,28 @@ describe('UserForm', () => {
     });
 
     it('編集モードでの「パスワードバリデーション」の変化', () => {
-      // TODO: 編集モード（URLにIDがある場合）は、パスワードが空でもフォームが有効であることを確認する
+      // 編集モード（URLにIDがある場合）は、パスワードが空でもフォームが有効であることを確認する
+      const userService = TestBed.inject(UserService);
+      const route = TestBed.inject(ActivatedRoute);
+      const form = component.form as FormGroup;
+      const mockUser = {
+        id: 1,
+        email: 'edit-test@example.com',
+        displayName: '',
+        role: 'ROLE_ADMIN',
+        lastLoggedInAt: null,
+      };
+
+      spyOnProperty(route, 'paramMap', 'get').and.returnValue(of(convertToParamMap({ id: '123' })));
+      spyOn(userService, 'getUser').and.returnValue(of(mockUser));
+      spyOn(userService, 'fetchCsrfToken').and.returnValue(of({ token: 'test-token' }));
+      component.ngOnInit();
+
+      // userIdが存在しているとき、編集モードであることを確認
+      expect(component['userId']).toBeTruthy();
+      expect(component['isEditMode']).toBeTrue();
+
+      expect(form.valid).toBeTrue();
     });
   });
 
@@ -392,11 +413,53 @@ describe('UserForm', () => {
     });
 
     it('ローディング状態（二重送信防止）の確認', () => {
-      // TODO: onSubmit 実行後、APIレスポンスが返ってくるまでボタンが非活性になっていることを確認する
+      // onSubmit 実行後、APIレスポンスが返ってくるまでボタンが非活性になっていることを確認する
+      const userService = TestBed.inject(UserService);
+      const responseSubject = new Subject<Record<string, string[]>>();
+
+      spyOn(userService, 'create').and.returnValue(responseSubject.asObservable());
+
+      component.form.patchValue({
+        email: 'test@example.com',
+        plainPassword: { first: 'testPassword', second: 'testPassword' },
+        role: 'ROLE_USER',
+      });
+      component.onSubmit();
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button[type=submit]');
+      expect(button.disabled).toBeTrue();
+
+      // 通信を模倣し、完了状態にする
+      responseSubject.next({});
+      responseSubject.complete();
+      fixture.detectChanges();
+
+      expect(button.disabled).toBeFalse();
     });
 
     it('CSRFトークンの「送信」確認', () => {
-      // TODO: UserService.create/update が呼ばれる際、引数に正しい _token が含まれていることを確認する
+      const userService = TestBed.inject(UserService);
+      const testToken = 'test-csrf-token-1234';
+
+      spyOn(userService, 'fetchCsrfToken').and.returnValue(of({ token: testToken }));
+      const createSpy = spyOn(userService, 'create').and.returnValue(of({}));
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      component.form.patchValue({
+        email: 'test@example.com',
+        plainPassword: { first: 'testPassword', second: 'testPassword' },
+        role: 'ROLE_USER',
+      });
+      component.onSubmit();
+
+      expect(createSpy).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          _token: testToken,
+        }),
+      );
     });
   });
 
@@ -444,7 +507,31 @@ describe('UserForm', () => {
     });
 
     it('サーバーエラー時の「表示クラス」の確認', () => {
-      // TODO: サーバーから返ってきたエラーメッセージが .invalid-feedback クラスの中に表示されていることを確認する
+      // サーバーから返ってきたエラーメッセージが .invalid-feedback クラスの中に表示されていることを確認する
+      const userService = TestBed.inject(UserService);
+
+      const mockBackendErrors: BackendFormErrors = {
+        email: ['このメールアドレスは既に使用されています'],
+      };
+
+      spyOn(userService, 'create').and.returnValue(
+        throwError(() => ({ error: mockBackendErrors })),
+      );
+
+      component.form.patchValue({
+        email: 'test@example.com',
+        plainPassword: { first: 'testPassword', second: 'testPassword' },
+        role: 'ROLE_USER',
+      });
+      component.onSubmit();
+      fixture.detectChanges();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      const errorDiv = compiled.querySelector(`#email ~ ${errorMessageClass}`);
+
+      expect(errorDiv).toBeTruthy();
+      expect(errorDiv?.classList.contains('invalid-feedback')).toBeTrue();
+      expect(errorDiv?.textContent).toContain('このメールアドレスは既に使用されています');
     });
   });
 });
