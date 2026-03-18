@@ -1,7 +1,6 @@
 describe('ホーム画面のテスト', () => {
   before(() => {
-    // フィクスチャのロード
-    cy.exec('php ../bin/console doctrine:fixtures:load --no-interaction --env=test');
+    cy.request('POST', '/api/test/database-reset');
   });
 
   beforeEach(() => {
@@ -14,10 +13,7 @@ describe('ホーム画面のテスト', () => {
     cy.clock(now.getTime(), ['Date']);
 
     // ログイン処理
-    cy.visit('/login');
-    cy.get('input[formControlName="email"]').clear().type('admin@example.com');
-    cy.get('input[formControlName="password"]').clear().type('password');
-    cy.get('button[type="submit"]').should('not.be.disabled').click();
+    cy.login();
 
     cy.wait('@loginRequest');
     cy.visit('/home');
@@ -43,5 +39,9 @@ describe('ホーム画面のテスト', () => {
     cy.contains('label', 'month').click();
     cy.wait('@fetchDaily');
     cy.get('.daily-grid-month').should('exist');
+
+    // 2026年3月の場合、最初の日付は 2026-02-23 (月)、最後は 2026-04-05 (日)
+    cy.get('.daily-grid-month .card-header').first().should('contain', '2026-02-23');
+    cy.get('.daily-grid-month .card-header').last().should('contain', '2026-04-05');
   });
 });

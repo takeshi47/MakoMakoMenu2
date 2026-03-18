@@ -1,13 +1,14 @@
 describe('材料フォームのテスト', () => {
   before(() => {
-    // todo: ｃｙ．ｔｓ側で直接実行しない
-    cy.exec('php ../bin/console doctrine:fixtures:load --no-interaction --env=test');
+    cy.request('POST', '/api/test/database-reset');
   });
-
   beforeEach(() => {
     // セッションの干渉を防ぐ
     cy.clearCookies();
     cy.clearLocalStorage();
+
+    // confirm ダイアログをスタブ化
+    cy.on('window:confirm', () => true);
 
     // APIの監視
     cy.intercept('GET', '**/api/ingredient/csrf-token/ingredient_form').as('getCsrfToken');
@@ -16,10 +17,7 @@ describe('材料フォームのテスト', () => {
     cy.intercept('DELETE', '**/api/ingredient/delete/*').as('deleteIngredient');
 
     // ログイン処理
-    cy.visit('/login');
-    cy.get('input[formControlName="email"]').clear().type('admin@example.com');
-    cy.get('input[formControlName="password"]').clear().type('password');
-    cy.get('button[type="submit"]').should('not.be.disabled').click();
+    cy.login();
 
     cy.url().should('include', '/home');
 
@@ -106,9 +104,9 @@ describe('材料フォームのテスト', () => {
     cy.get('tr[app-ingredient-form]').within(() => {
       cy.get('input[formControlName="name"]').clear().type(duplicateName);
       cy.contains('保存').click();
-      
+
       cy.wait('@createIngredient').its('response.statusCode').should('eq', 400);
-      
+
       // input をスクロールして視認性を確保
       cy.get('input[formControlName="name"]').scrollIntoView().should('be.visible');
       // invalid-tooltip 内にエラーメッセージが含まれていること
