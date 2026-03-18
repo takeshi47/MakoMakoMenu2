@@ -1,33 +1,22 @@
-describe('材料フォームのテスト', () => {
-  before(() => {
-    // todo: ｃｙ．ｔｓ側で直接実行しない
-    cy.exec('php ../bin/console doctrine:fixtures:load --no-interaction --env=test');
-  });
-
+describe('材料フォーム의テスト', () => {
   beforeEach(() => {
-    // セッションの干渉を防ぐ
-    cy.clearCookies();
-    cy.clearLocalStorage();
-
     // APIの監視
-    cy.intercept('GET', '**/api/ingredient/csrf-token/ingredient_form').as('getCsrfToken');
     cy.intercept('POST', '**/api/ingredient/new').as('createIngredient');
     cy.intercept('POST', '**/api/ingredient/edit/*').as('updateIngredient');
     cy.intercept('DELETE', '**/api/ingredient/delete/*').as('deleteIngredient');
 
     // ログイン処理
-    cy.visit('/login');
-    cy.get('input[formControlName="email"]').clear().type('admin@example.com');
-    cy.get('input[formControlName="password"]').clear().type('password');
-    cy.get('button[type="submit"]').should('not.be.disabled').click();
-
-    cy.url().should('include', '/home');
+    cy.login();
 
     // 材料一覧画面へ遷移
     cy.visit('/ingredient/list');
     cy.url().should('include', '/ingredient/list');
     cy.contains('h2', '材料リスト').should('be.visible');
-    cy.wait('@getCsrfToken');
+
+    // CSRFトークンの取得を待機
+    cy.wait('@getCsrfToken').its('response.statusCode').should('eq', 200);
+    // Angularの変更検知とInputへの反映を待つためのバッファ
+    cy.wait(500);
   });
 
   it('ログインして材料一覧が表示されること', () => {
@@ -39,7 +28,7 @@ describe('材料フォームのテスト', () => {
     cy.contains('じゃがいも').should('be.visible');
   });
 
-  it('新しい材料を新しい材料を登録するできること', () => {
+  it('新しい材料を登録できること', () => {
     const targetName = 'なす' + Date.now();
 
     // 登録フォームの表示
@@ -106,9 +95,9 @@ describe('材料フォームのテスト', () => {
     cy.get('tr[app-ingredient-form]').within(() => {
       cy.get('input[formControlName="name"]').clear().type(duplicateName);
       cy.contains('保存').click();
-      
+
       cy.wait('@createIngredient').its('response.statusCode').should('eq', 400);
-      
+
       // input をスクロールして視認性を確保
       cy.get('input[formControlName="name"]').scrollIntoView().should('be.visible');
       // invalid-tooltip 内にエラーメッセージが含まれていること
@@ -124,16 +113,43 @@ describe('材料フォームのテスト', () => {
     cy.get('input[formControlName="name"]').should('have.length', 2);
   });
 
-  it('削除ボタンが表示されている材料を削除できること', () => {
-    // 確実に削除可能な「削除用材料」を対象にする
-    cy.contains('tbody tr', '削除用材料').within(() => {
-      cy.get('button.btn-outline-danger').click();
+  it('新しく登録した材料を削除できること', () => {
+    const name = '削除テスト' + Date.now();
+
+    // 登録
+    cy.contains('button', '新しい材料を登録する').click();
+    cy.get('tr[app-ingredient-form]').within(() => {
+      cy.get('input[formControlName="name"]').type(name);
+      cy.contains('保存').click();
+    });
+    cy.wait('@createIngredient').its('response.statusCode').should('eq', 201);
+
+    // 削除
+    cy.contains('tr', name).within(() => {
+      cy.get('button.btn-outline-danger').should('be.visible').click();
     });
 
-    // APIリクエストの完了を待機
+    // 正常に削除されることを確認
     cy.wait('@deleteIngredient').its('response.statusCode').should('eq', 200);
 
     // 一覧から消えていることを確認
-    cy.contains('削除用材料').should('not.exist');
+    cy.contains(name).should('not.exist');
+  });
+
+  it('既存の削除ボタンが表示されている材料を削除できること', () => {
+    // 削除ボタンが存在する最初の行（canDelete=trueのデータ）を探す
+    cy.get('tbody tr').filter(':has(button.btn-outline-danger)').first().then(($row) => {
+      // 削除後の検証用に材料名を保持
+      const ingredientName = $row.find('td').first().text().trim();
+
+      // その行内の削除ボタンをクリック
+      cy.wrap($row).find('button.btn-outline-danger').click();
+
+      // APIリクエストの成功を確認
+      cy.wait('@deleteIngredient').its('response.statusCode').should('eq', 200);
+
+      // 一覧からその名前のデータが消えていることを確認
+      cy.contains('tbody tr', ingredientName).should('not.exist');
+    });
   });
 });

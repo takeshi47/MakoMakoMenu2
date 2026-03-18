@@ -26,8 +26,10 @@ doctrine:
 when@test:
     doctrine:
         dbal:
-            # "TEST_TOKEN" is typically set by ParaTest
-            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+            # Override DATABASE_URL specifically for SQLite in tests
+            url: "sqlite:///%kernel.project_dir%/var/app_test.db"
+            driver: 'pdo_sqlite'
+            charset: utf8
 
 when@prod:
     doctrine:
